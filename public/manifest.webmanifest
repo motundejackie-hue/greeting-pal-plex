@@ -1,0 +1,16 @@
+{
+  "name": "Opencast — Free TV Worldwide",
+  "short_name": "Opencast",
+  "description": "Free worldwide live TV. Thousands of channels, no account required.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#e11d2e",
+  "icons": [
+    { "src": "/app-icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
