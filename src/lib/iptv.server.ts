@@ -34,6 +34,8 @@ const PLAYLISTS: { url: string; source: string; headers?: Record<string, string>
 const TTL = 24 * 60 * 60 * 1000;
 
 type Catalog = {
+  /** Extra stream URLs per channel slug, used as fallbacks when the main link fails. */
+  alternates: Record<string, string[]>;
   channels: Channel[];
   countries: CountryInfo[];
   categories: CategoryInfo[];
@@ -168,6 +170,7 @@ async function build(): Promise<Catalog> {
 
   // Dedupe: keep the best stream per channel slug, and never repeat a URL.
   const seenUrls = new Set<string>();
+  const alternates: Record<string, string[]> = {};
   const best = new Map<string, Channel>();
   for (const c of merged) {
     if (!c.slug || !c.streamUrl.startsWith("http")) continue;
