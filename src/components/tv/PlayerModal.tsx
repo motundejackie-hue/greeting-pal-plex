@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Heart, Loader2, Maximize2, Trash2, Volume2, VolumeX, X } from "lucide-react";
 import type { Channel } from "@/lib/channel-types";
 import { countryFlag } from "@/lib/channel-types";
 import { ChannelLogo } from "@/components/tv/ChannelLogo";
+import { getStreamSources } from "@/lib/iptv.functions";
 import { useHlsStream } from "@/hooks/use-hls";
 
 type Props = {
@@ -16,12 +18,19 @@ type Props = {
 export function PlayerModal({ channel, onClose, onDelete, onFavorite, isFavorite }: Props) {
   const [muted, setMuted] = useState(false);
   const shell = useRef<HTMLDivElement | null>(null);
+  const sources = useQuery({
+    queryKey: ["stream-sources", channel.slug],
+    queryFn: () => getStreamSources({ data: { slug: channel.slug } }),
+    staleTime: 30 * 60 * 1000,
+  });
   const { videoRef, state, levels, level, setLevel, attemptLabel } = useHlsStream(
     channel.streamUrl,
     {
       muted,
+      fallbacks: sources.data?.urls ?? [],
     },
   );
+
 
   const toggleFullscreen = () => {
     const el = shell.current;
