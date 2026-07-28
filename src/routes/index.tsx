@@ -72,7 +72,9 @@ function HomePage() {
     }
   }, []);
 
-  const visible = (items: Channel[]) => items.filter((c) => !deleted.includes(c.slug));
+  const withLogo = (items: Channel[]) =>
+    items.filter((c) => !deleted.includes(c.slug) && Boolean(c.logo));
+  const all = data.rows.flatMap((r) => r.items as Channel[]);
   const hero = data.hero;
 
   return (
@@ -80,33 +82,27 @@ function HomePage() {
       <SplashScreen />
       <AppShell>
         <HeroCarousel
-          featured={(hero
-            ? [hero, ...data.rows.flatMap((r) => r.items as Channel[])]
-            : data.rows.flatMap((r) => r.items as Channel[])
-          ).slice(0, 5)}
+          featured={withLogo(hero ? [hero, ...all] : all).slice(0, 5)}
           onPlay={open}
           totalChannels={data.total}
         />
 
         <ChannelRow
           title="Top picks for you"
-          items={visible(data.rows.flatMap((r) => r.items as Channel[]).slice(0, 18))}
+          items={withLogo(all).slice(0, 12)}
           onOpen={open}
           onDelete={remove}
           onFavorite={(c) => toggle(c.slug)}
           favorites={slugs}
         />
 
-        <FavoriteAppsRow
-          items={data.rows.flatMap((r) => r.items as Channel[]).slice(0, 14)}
-          onOpen={open}
-        />
+        <FavoriteAppsRow items={withLogo(all).slice(0, 10)} onOpen={open} />
 
         {data.rows.slice(1).map((row) => (
           <ChannelRow
             key={row.id}
             title={row.title}
-            items={visible(row.items as Channel[])}
+            items={withLogo(row.items as Channel[])}
             onOpen={open}
             onDelete={remove}
             onFavorite={(c) => toggle(c.slug)}
@@ -114,10 +110,11 @@ function HomePage() {
           />
         ))}
 
-        <footer className="px-4 py-8 text-center text-[10px] text-muted-foreground md:px-8">
+        <footer className="px-5 py-10 text-center text-[11px] text-muted-foreground md:px-12">
           Opencast · Free TV. Everywhere.
         </footer>
       </AppShell>
+
 
       {active ? (
         <PlayerModal

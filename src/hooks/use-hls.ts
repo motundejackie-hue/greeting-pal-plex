@@ -5,11 +5,11 @@ const PROXY = import.meta.env.VITE_CORS_PROXY_URL ?? "https://corsproxy.io/?";
 
 export type PlayState = "loading" | "playing" | "error";
 
-type Options = { muted?: boolean; autoPlay?: boolean };
+type Options = { muted?: boolean; autoPlay?: boolean; fallbacks?: string[] };
 
 /**
- * Attaches an HLS stream to a video element with a 3-stage fallback chain:
- * direct -> app stream proxy -> public CORS proxy, each retried once.
+ * Attaches an HLS stream to a video element. Every source (primary link first,
+ * then backup links from other providers) is tried direct -> app proxy -> CORS proxy.
  */
 export function useHlsStream(url: string | null, options: Options = {}) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -18,6 +18,7 @@ export function useHlsStream(url: string | null, options: Options = {}) {
   const [levels, setLevels] = useState<{ index: number; label: string }[]>([]);
   const [level, setLevelState] = useState(-1);
   const [attemptLabel, setAttemptLabel] = useState("Direct");
+  const fallbackKey = (options.fallbacks ?? []).join("|");
 
   const setLevel = useCallback((index: number) => {
     if (hlsRef.current) hlsRef.current.currentLevel = index;
@@ -30,11 +31,16 @@ export function useHlsStream(url: string | null, options: Options = {}) {
 
     let cancelled = false;
     let stage = 0;
-    const candidates = [
-      { label: "Direct", href: url },
-      { label: "Proxy", href: `/api/stream-proxy?url=${encodeURIComponent(url)}` },
-      { label: "CORS proxy", href: `${PROXY}${encodeURIComponent(url)}` },
-    ];
+    const sources = [url, ...(options.fallbacks ?? []).filter((u) => u && u !== url)];
+    const candidates = sources.flatMap((src, i) => {
+      const tag = i === 0 ? "" : ` · backup ${i}`;
+      return [
+        { label: `Direct${tag}`, href: src },
+        { label: `Proxy${tag}`, href: `/api/stream-proxy?url=${encodeURIComponent(src)}` },
+        { label: `CORS proxy${tag}`, href: `${PROXY}${encodeURIComponent(src)}` },
+      ];
+    });
+
 
     const cleanup = () => {
       hlsRef.current?.destroy();
@@ -113,7 +119,7 @@ export function useHlsStream(url: string | null, options: Options = {}) {
       cleanup();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, options.muted]);
+  }, [url, options.muted, fallbackKey]);
 
   return { videoRef, state, levels, level, setLevel, attemptLabel };
 }

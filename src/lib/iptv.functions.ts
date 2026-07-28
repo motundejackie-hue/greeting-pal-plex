@@ -57,3 +57,19 @@ export const getChannelsBySlugs = createServerFn({ method: "GET" })
     const found = catalog.channels.filter((c) => wanted.has(c.slug));
     return { items: found };
   });
+
+/** Alternate stream links for a channel, used when the primary link fails. */
+export const getStreamSources = createServerFn({ method: "GET" })
+  .inputValidator((data: { slug?: string } | undefined) => ({
+    slug: String(data?.slug ?? "").slice(0, 120),
+  }))
+  .handler(async ({ data }) => {
+    const { getCatalog } = await import("./iptv.server");
+    const catalog = await getCatalog();
+    const channel = catalog.channels.find((c) => c.slug === data.slug);
+    const alts = catalog.alternates[data.slug] ?? [];
+    const urls = [channel?.streamUrl, ...alts].filter(
+      (u): u is string => typeof u === "string" && u.startsWith("http"),
+    );
+    return { urls: [...new Set(urls)].slice(0, 8) };
+  });

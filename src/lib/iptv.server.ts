@@ -34,6 +34,8 @@ const PLAYLISTS: { url: string; source: string; headers?: Record<string, string>
 const TTL = 24 * 60 * 60 * 1000;
 
 type Catalog = {
+  /** Extra stream URLs per channel slug, used as fallbacks when the main link fails. */
+  alternates: Record<string, string[]>;
   channels: Channel[];
   countries: CountryInfo[];
   categories: CategoryInfo[];
@@ -168,6 +170,7 @@ async function build(): Promise<Catalog> {
 
   // Dedupe: keep the best stream per channel slug, and never repeat a URL.
   const seenUrls = new Set<string>();
+  const alternates: Record<string, string[]> = {};
   const best = new Map<string, Channel>();
   for (const c of merged) {
     if (!c.slug || !c.streamUrl.startsWith("http")) continue;
@@ -186,10 +189,14 @@ async function build(): Promise<Catalog> {
     const better =
       qualityRank(c.quality) > qualityRank(current.quality) ||
       (current.streamUrl.includes(".m3u8") === false && c.streamUrl.includes(".m3u8"));
+    const list = (alternates[c.slug] ??= []);
     if (better) {
+      if (list.length < 6 && !list.includes(current.streamUrl)) list.push(current.streamUrl);
       current.streamUrl = c.streamUrl;
       current.quality = c.quality ?? current.quality;
       current.source = c.source;
+    } else if (list.length < 6 && !list.includes(c.streamUrl)) {
+      list.push(c.streamUrl);
     }
   }
 
@@ -288,7 +295,7 @@ async function build(): Promise<Catalog> {
     .filter((c) => c.count > 2)
     .sort((a, b) => b.count - a.count);
 
-  return { channels, countries, categories, builtAt: Date.now() };
+  return { channels, countries, categories, alternates, builtAt: Date.now() };
 }
 
 export async function getCatalog(): Promise<Catalog> {
