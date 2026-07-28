@@ -102,7 +102,7 @@ function HomePage() {
           onOpen={open}
         />
 
-        {data.rows.map((row) => (
+        {data.rows.slice(1).map((row) => (
           <ChannelRow
             key={row.id}
             title={row.title}
