@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Heart, Loader2, Maximize2, Trash2, Volume2, VolumeX, X } from "lucide-react";
 import type { Channel } from "@/lib/channel-types";
-import { countryFlag, initials } from "@/lib/channel-types";
+import { countryFlag } from "@/lib/channel-types";
+import { ChannelLogo } from "@/components/tv/ChannelLogo";
 import { useHlsStream } from "@/hooks/use-hls";
 
 type Props = {
@@ -15,14 +16,18 @@ type Props = {
 export function PlayerModal({ channel, onClose, onDelete, onFavorite, isFavorite }: Props) {
   const [muted, setMuted] = useState(false);
   const shell = useRef<HTMLDivElement | null>(null);
-  const { videoRef, state, levels, level, setLevel, attemptLabel } = useHlsStream(channel.streamUrl, {
-    muted,
-  });
+  const { videoRef, state, levels, level, setLevel, attemptLabel } = useHlsStream(
+    channel.streamUrl,
+    {
+      muted,
+    },
+  );
 
   const toggleFullscreen = () => {
     const el = shell.current;
     if (!el) return;
-    const orientation = screen.orientation as (ScreenOrientation & { lock?: (o: string) => Promise<void> }) | undefined;
+    const orientation = screen.orientation as
+      (ScreenOrientation & { lock?: (o: string) => Promise<void> }) | undefined;
     if (document.fullscreenElement) {
       void document.exitFullscreen();
       try {
@@ -42,7 +47,6 @@ export function PlayerModal({ channel, onClose, onDelete, onFavorite, isFavorite
     }
   };
 
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -51,7 +55,13 @@ export function PlayerModal({ channel, onClose, onDelete, onFavorite, isFavorite
       if (e.key === " ") {
         e.preventDefault();
         const v = videoRef.current;
-        if (v) v.paused ? void v.play() : v.pause();
+        if (v) {
+          if (v.paused) {
+            void v.play();
+          } else {
+            v.pause();
+          }
+        }
       }
     };
     window.addEventListener("keydown", onKey);
@@ -80,11 +90,12 @@ export function PlayerModal({ channel, onClose, onDelete, onFavorite, isFavorite
           </button>
           <div className="flex min-w-0 items-center gap-2">
             <div className="grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-md bg-secondary text-[10px] font-bold">
-              {channel.logo ? (
-                <img src={channel.logo} alt="" className="h-full w-full object-contain p-0.5" />
-              ) : (
-                initials(channel.name)
-              )}
+              <ChannelLogo
+                channel={channel}
+                alt={channel.name}
+                className="h-full w-full object-contain p-0.5"
+                placeholderClassName="grid h-full w-full place-items-center text-[10px] font-bold"
+              />
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-foreground">{channel.name}</p>
@@ -104,7 +115,6 @@ export function PlayerModal({ channel, onClose, onDelete, onFavorite, isFavorite
         </header>
 
         <div className="relative aspect-video w-full bg-black">
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
             ref={videoRef}
             playsInline
@@ -121,8 +131,8 @@ export function PlayerModal({ channel, onClose, onDelete, onFavorite, isFavorite
           {state === "error" ? (
             <div className="absolute inset-0 grid place-items-center bg-black/80 px-6 text-center">
               <p className="text-xs text-muted-foreground">
-                This stream isn&apos;t responding right now. Try another channel, or delete it from the
-                line-up.
+                This stream isn&apos;t responding right now. Try another channel, or delete it from
+                the line-up.
               </p>
             </div>
           ) : null}

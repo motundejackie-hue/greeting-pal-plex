@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { CHANNEL_LOGOS, normalizeChannelKey } from "./channel-logos";
+import { CHANNEL_LOGOS, getPreferredChannelLogo, normalizeChannelKey } from "./channel-logos";
 import type { Channel, CountryInfo, CategoryInfo } from "./channel-types";
 
 export type { Channel, CountryInfo, CategoryInfo };
@@ -7,11 +7,27 @@ export type { Channel, CountryInfo, CategoryInfo };
 const API = process.env.IPTV_API_URL ?? "https://iptv-org.github.io/api/";
 const PLAYLISTS: { url: string; source: string; headers?: Record<string, string> }[] = [
   { url: "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8", source: "free-tv" },
-  { url: "https://bit.ly/topembed-m3u1-all", source: "topembed", headers: { Referer: "https://topembed.pw/" } },
-  { url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/output.m3u", source: "zilla" },
-  { url: "https://raw.githubusercontent.com/abusaeeidx/T-Sports-Playlist-Auto-Update/main/playlist.m3u", source: "t-sports" },
-  { url: "https://raw.githubusercontent.com/dtankdempse/streamed-su-sports/main/playlist.m3u", source: "streamed-su" },
-  { url: "https://raw.githubusercontent.com/twoonethree/IPTV/main/Sports.m3u", source: "twoonethree" },
+  {
+    url: "https://bit.ly/topembed-m3u1-all",
+    source: "topembed",
+    headers: { Referer: "https://topembed.pw/" },
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/output.m3u",
+    source: "zilla",
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/T-Sports-Playlist-Auto-Update/main/playlist.m3u",
+    source: "t-sports",
+  },
+  {
+    url: "https://raw.githubusercontent.com/dtankdempse/streamed-su-sports/main/playlist.m3u",
+    source: "streamed-su",
+  },
+  {
+    url: "https://raw.githubusercontent.com/twoonethree/IPTV/main/Sports.m3u",
+    source: "twoonethree",
+  },
   { url: "https://iptv-org.github.io/iptv/index.m3u", source: "iptv-org-m3u" },
 ];
 
@@ -187,17 +203,24 @@ async function build(): Promise<Catalog> {
       global: {
         fetch: (input, init) => {
           const h = new Headers(init?.headers);
-          if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
+          if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`)
+            h.delete("Authorization");
           h.set("apikey", key);
           return fetch(input, { ...init, headers: h });
         },
       },
     });
     const [{ data: rows }, { data: logos }] = await Promise.all([
-      sb.from("tv").select("slug, name, country, categories, languages, stream_url, quality, source, is_hidden"),
+      sb
+        .from("tv")
+        .select(
+          "slug, name, country, categories, languages, stream_url, quality, source, is_hidden",
+        ),
       sb.from("tv_logos").select("channel_slug, logo_url"),
     ]);
-    const logoMap = new Map((logos ?? []).map((l) => [l.channel_slug as string, l.logo_url as string]));
+    const logoMap = new Map(
+      (logos ?? []).map((l) => [l.channel_slug as string, l.logo_url as string]),
+    );
     const hidden = new Set<string>();
     const index = new Map(channels.map((c) => [c.slug, c]));
     for (const r of rows ?? []) {
@@ -237,11 +260,9 @@ async function build(): Promise<Catalog> {
     /* backend overlay is best-effort */
   }
 
-  // Final logo resolution: curated table > existing > fanmingming name fallback.
+  // Final logo resolution: prefer curated or existing logo, then fallback candidates.
   for (const c of channels) {
-    const curated = CHANNEL_LOGOS[c.slug];
-    if (curated) c.logo = curated;
-    else if (!c.logo) c.logo = `https://live.fanmingming.cn/tv/${encodeURIComponent(c.name)}.png`;
+    c.logo = getPreferredChannelLogo(c);
   }
 
   const countryNames = new Map((orgCountries ?? []).map((c) => [c.code, c]));
@@ -315,9 +336,24 @@ function pick(catalog: Catalog, predicate: (c: Channel) => boolean, limit = 24) 
 }
 
 const CURATED = [
-  "cnn", "bbcnews", "aljazeeraenglish", "skynews", "france24english", "dwenglish",
-  "nhkworldjapan", "cna", "euronews", "bloombergtv", "redbulltv", "natgeo",
-  "history", "mtv", "cartoonnetwork", "nickelodeon", "plutotv", "espn",
+  "cnn",
+  "bbcnews",
+  "aljazeeraenglish",
+  "skynews",
+  "france24english",
+  "dwenglish",
+  "nhkworldjapan",
+  "cna",
+  "euronews",
+  "bloombergtv",
+  "redbulltv",
+  "natgeo",
+  "history",
+  "mtv",
+  "cartoonnetwork",
+  "nickelodeon",
+  "plutotv",
+  "espn",
 ];
 
 export function buildHome(catalog: Catalog, country: string | null) {
@@ -328,12 +364,28 @@ export function buildHome(catalog: Catalog, country: string | null) {
     hero: featured[0] ?? catalog.channels[0] ?? null,
     rows: [
       { id: "picks", title: "Top Picks", items: featured.slice(0, 20) },
-      { id: "popular", title: "Popular", items: pick(catalog, (c) => withLogo(c) && c.categories.length > 0, 24) },
+      {
+        id: "popular",
+        title: "Popular",
+        items: pick(catalog, (c) => withLogo(c) && c.categories.length > 0, 24),
+      },
       { id: "news", title: "News", items: pick(catalog, (c) => c.categories.includes("news"), 24) },
-      { id: "sports", title: "Sports", items: pick(catalog, (c) => c.categories.includes("sports"), 24) },
-      { id: "movies", title: "Movies", items: pick(catalog, (c) => c.categories.includes("movies"), 24) },
+      {
+        id: "sports",
+        title: "Sports",
+        items: pick(catalog, (c) => c.categories.includes("sports"), 24),
+      },
+      {
+        id: "movies",
+        title: "Movies",
+        items: pick(catalog, (c) => c.categories.includes("movies"), 24),
+      },
       { id: "kids", title: "Kids", items: pick(catalog, (c) => c.categories.includes("kids"), 24) },
-      { id: "family", title: "Family", items: pick(catalog, (c) => c.categories.includes("family"), 24) },
+      {
+        id: "family",
+        title: "Family",
+        items: pick(catalog, (c) => c.categories.includes("family"), 24),
+      },
       {
         id: "entertainment",
         title: "Entertainment",
@@ -344,7 +396,11 @@ export function buildHome(catalog: Catalog, country: string | null) {
         title: "Documentary",
         items: pick(catalog, (c) => c.categories.includes("documentary"), 24),
       },
-      { id: "games", title: "Games", items: pick(catalog, (c) => c.categories.includes("games"), 24) },
+      {
+        id: "games",
+        title: "Games",
+        items: pick(catalog, (c) => c.categories.includes("games"), 24),
+      },
       {
         id: "local",
         title: "Local",

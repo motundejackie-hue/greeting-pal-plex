@@ -1,7 +1,8 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { Heart, Play, Trash2 } from "lucide-react";
 import type { Channel } from "@/lib/channel-types";
-import { countryFlag, initials } from "@/lib/channel-types";
+import { countryFlag } from "@/lib/channel-types";
+import { ChannelLogo } from "./ChannelLogo";
 
 type Props = {
   channel: Channel;
@@ -38,7 +39,10 @@ function useLivePreview(url: string | null, active: boolean) {
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             if (cancelled) return;
             video.muted = true;
-            void video.play().then(() => setLive(true)).catch(() => undefined);
+            void video
+              .play()
+              .then(() => setLive(true))
+              .catch(() => undefined);
           });
           hls.on(Hls.Events.ERROR, (_e, d) => {
             if (d.fatal) {
@@ -50,7 +54,10 @@ function useLivePreview(url: string | null, active: boolean) {
         } else {
           video.src = url;
           video.muted = true;
-          void video.play().then(() => setLive(true)).catch(() => undefined);
+          void video
+            .play()
+            .then(() => setLive(true))
+            .catch(() => undefined);
           destroy = () => {
             video.removeAttribute("src");
             video.load();
@@ -84,7 +91,6 @@ function ChannelCardBase({
   const wrap = useRef<HTMLDivElement | null>(null);
   const [hovered, setHovered] = useState(false);
   const [inView, setInView] = useState(false);
-  const [broken, setBroken] = useState(false);
 
   useEffect(() => {
     const el = wrap.current;
@@ -124,23 +130,15 @@ function ChannelCardBase({
           }`}
         >
           {/* logo / fallback */}
-          {channel.logo && !broken ? (
-            <img
-              src={channel.logo}
-              alt={`${channel.name} logo`}
-              loading="lazy"
-              onError={() => setBroken(true)}
-              className={`absolute inset-0 h-full w-full object-contain ${pad} transition-opacity duration-300 ${
-                live ? "opacity-0" : "opacity-100"
-              }`}
-            />
-          ) : (
-            <div className="absolute inset-0 grid place-items-center bg-black">
-              <span className="font-display text-xl font-bold text-white">
-                {initials(channel.name)}
-              </span>
-            </div>
-          )}
+          <ChannelLogo
+            channel={channel}
+            alt={`${channel.name} logo`}
+            loading="lazy"
+            className={`absolute inset-0 h-full w-full object-contain ${pad} transition-opacity duration-300 ${
+              live ? "opacity-0" : "opacity-100"
+            }`}
+            placeholderClassName="absolute inset-0 grid place-items-center bg-black font-display text-xl font-bold text-white"
+          />
 
           {/* live preview video */}
           {preview ? (

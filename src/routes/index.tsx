@@ -80,17 +80,18 @@ function HomePage() {
       <SplashScreen />
       <AppShell>
         <HeroCarousel
-          featured={(hero ? [hero, ...data.rows.flatMap((r) => r.items as Channel[])] : (data.rows.flatMap((r) => r.items as Channel[]))).slice(0, 5)}
+          featured={(hero
+            ? [hero, ...data.rows.flatMap((r) => r.items as Channel[])]
+            : data.rows.flatMap((r) => r.items as Channel[])
+          ).slice(0, 5)}
           onPlay={open}
           totalChannels={data.total}
         />
 
         <FavoriteAppsRow
-          items={data.rows.flatMap((r) => r.items as Channel[]).filter((c) => c.logo).slice(0, 12)}
+          items={data.rows.flatMap((r) => r.items as Channel[]).slice(0, 12)}
           onOpen={open}
         />
-
-
 
         {/* Category bubble strip */}
         <div className="no-scrollbar mb-6 flex gap-3 overflow-x-auto px-4 md:px-8">

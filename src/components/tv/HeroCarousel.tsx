@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Play } from "lucide-react";
 import type { Channel } from "@/lib/channel-types";
-import { countryFlag, initials } from "@/lib/channel-types";
+import { countryFlag } from "@/lib/channel-types";
+import { ChannelLogo } from "./ChannelLogo";
 import hero2 from "@/assets/hero/hero-2.png.asset.json";
 import hero3 from "@/assets/hero/hero-3.png.asset.json";
 import hero4 from "@/assets/hero/hero-4.png.asset.json";
@@ -63,7 +64,9 @@ export function HeroCarousel({ featured, onPlay, totalChannels }: Props) {
               {channel?.name ?? "Opencast"}
             </h1>
             <p className="mt-2 text-xs text-white/70 md:text-sm">
-              {channel ? `${countryFlag(channel.country)} ${channel.categories.slice(0, 3).join(" · ") || "live"} · ` : ""}
+              {channel
+                ? `${countryFlag(channel.country)} ${channel.categories.slice(0, 3).join(" · ") || "live"} · `
+                : ""}
               {slide.tagline} · {totalChannels.toLocaleString()} channels
             </p>
             {channel ? (
@@ -78,15 +81,12 @@ export function HeroCarousel({ featured, onPlay, totalChannels }: Props) {
           </div>
           {channel ? (
             <div className="hidden h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-full border border-white/15 bg-black/70 ring-1 ring-primary/40 md:grid md:h-32 md:w-32">
-              {channel.logo ? (
-                <img
-                  src={channel.logo}
-                  alt={`${channel.name} logo`}
-                  className="h-full w-full object-contain p-3"
-                />
-              ) : (
-                <span className="font-display text-2xl font-bold text-white">{initials(channel.name)}</span>
-              )}
+              <ChannelLogo
+                channel={channel}
+                alt={`${channel.name} logo`}
+                className="h-full w-full object-contain p-3"
+                placeholderClassName="grid h-full w-full place-items-center bg-black text-white"
+              />
             </div>
           ) : null}
         </div>
