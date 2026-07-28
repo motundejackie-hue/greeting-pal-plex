@@ -295,7 +295,7 @@ async function build(): Promise<Catalog> {
     .filter((c) => c.count > 2)
     .sort((a, b) => b.count - a.count);
 
-  return { channels, countries, categories, builtAt: Date.now() };
+  return { channels, countries, categories, alternates, builtAt: Date.now() };
 }
 
 export async function getCatalog(): Promise<Catalog> {
