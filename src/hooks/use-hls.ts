@@ -119,7 +119,7 @@ export function useHlsStream(url: string | null, options: Options = {}) {
       cleanup();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, options.muted]);
+  }, [url, options.muted, fallbackKey]);
 
   return { videoRef, state, levels, level, setLevel, attemptLabel };
 }
