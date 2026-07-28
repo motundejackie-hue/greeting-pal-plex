@@ -18,21 +18,21 @@ export function ChannelRow({ title, items, onOpen, onDelete, onFavorite, favorit
   const nudge = (dir: -1 | 1) => {
     const el = scroller.current;
     if (!el) return;
-    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.85), behavior: "smooth" });
+    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.8), behavior: "smooth" });
   };
 
   if (items.length === 0) return null;
 
   return (
-    <section className="mb-7">
-      <div className="mb-2 flex items-center justify-between gap-3 px-4 md:px-8">
-        <h2 className="truncate text-sm font-semibold text-foreground md:text-base">{title}</h2>
-        <div className="hidden gap-1 md:flex">
+    <section className="mb-10">
+      <div className="mb-3 flex items-center justify-between gap-3 px-5 md:px-12">
+        <h2 className="truncate text-base font-semibold text-foreground md:text-xl">{title}</h2>
+        <div className="hidden gap-1.5 md:flex">
           <button
             type="button"
             aria-label={`Scroll ${title} left`}
             onClick={() => nudge(-1)}
-            className="grid h-7 w-7 place-items-center rounded-full bg-secondary text-foreground hover:bg-muted"
+            className="grid h-8 w-8 place-items-center rounded-full bg-secondary text-foreground transition hover:bg-muted"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -40,7 +40,7 @@ export function ChannelRow({ title, items, onOpen, onDelete, onFavorite, favorit
             type="button"
             aria-label={`Scroll ${title} right`}
             onClick={() => nudge(1)}
-            className="grid h-7 w-7 place-items-center rounded-full bg-secondary text-foreground hover:bg-muted"
+            className="grid h-8 w-8 place-items-center rounded-full bg-secondary text-foreground transition hover:bg-muted"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -48,12 +48,12 @@ export function ChannelRow({ title, items, onOpen, onDelete, onFavorite, favorit
       </div>
       <div
         ref={scroller}
-        className="no-scrollbar flex snap-x gap-2.5 overflow-x-auto scroll-smooth px-4 pb-1 md:gap-3 md:px-8"
+        className="no-scrollbar flex snap-x gap-4 overflow-x-auto scroll-smooth px-5 pb-2 md:gap-5 md:px-12"
       >
-        {items.map((c) => (
+        {items.slice(0, 12).map((c) => (
           <div
             key={`${c.slug}-${c.streamUrl}`}
-            className="w-[104px] shrink-0 snap-start sm:w-[140px] md:w-[190px]"
+            className="w-[220px] shrink-0 snap-start sm:w-[280px] md:w-[340px]"
           >
             <ChannelCard
               channel={c}
@@ -61,7 +61,7 @@ export function ChannelRow({ title, items, onOpen, onDelete, onFavorite, favorit
               onDelete={onDelete}
               onFavorite={onFavorite}
               isFavorite={favorites?.includes(c.slug)}
-              size="sm"
+              size="lg"
             />
           </div>
         ))}
