@@ -189,10 +189,14 @@ async function build(): Promise<Catalog> {
     const better =
       qualityRank(c.quality) > qualityRank(current.quality) ||
       (current.streamUrl.includes(".m3u8") === false && c.streamUrl.includes(".m3u8"));
+    const list = (alternates[c.slug] ??= []);
     if (better) {
+      if (list.length < 6 && !list.includes(current.streamUrl)) list.push(current.streamUrl);
       current.streamUrl = c.streamUrl;
       current.quality = c.quality ?? current.quality;
       current.source = c.source;
+    } else if (list.length < 6 && !list.includes(c.streamUrl)) {
+      list.push(c.streamUrl);
     }
   }
 
