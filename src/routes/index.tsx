@@ -88,30 +88,21 @@ function HomePage() {
           totalChannels={data.total}
         />
 
+        <ChannelRow
+          title="Top picks for you"
+          items={visible(data.rows.flatMap((r) => r.items as Channel[]).slice(0, 18))}
+          onOpen={open}
+          onDelete={remove}
+          onFavorite={(c) => toggle(c.slug)}
+          favorites={slugs}
+        />
+
         <FavoriteAppsRow
-          items={data.rows.flatMap((r) => r.items as Channel[]).slice(0, 12)}
+          items={data.rows.flatMap((r) => r.items as Channel[]).slice(0, 14)}
           onOpen={open}
         />
 
-        {/* Category bubble strip */}
-        <div className="no-scrollbar mb-6 flex gap-3 overflow-x-auto px-4 md:px-8">
-          {data.categories.slice(0, 16).map((cat) => (
-            <a
-              key={cat.id}
-              href={`/browse?category=${cat.id}`}
-              className="flex w-14 shrink-0 flex-col items-center gap-1.5"
-            >
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-brand-soft text-sm font-bold text-foreground">
-                {cat.name.slice(0, 2).toUpperCase()}
-              </span>
-              <span className="w-full truncate text-center text-[9px] text-muted-foreground">
-                {cat.name}
-              </span>
-            </a>
-          ))}
-        </div>
-
-        {data.rows.map((row) => (
+        {data.rows.slice(1).map((row) => (
           <ChannelRow
             key={row.id}
             title={row.title}
