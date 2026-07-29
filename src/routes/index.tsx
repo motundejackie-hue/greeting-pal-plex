@@ -91,7 +91,6 @@ function HomePage() {
           title="Top picks for you"
           items={withLogo(all).slice(0, 12)}
           onOpen={open}
-          onDelete={remove}
           onFavorite={(c) => toggle(c.slug)}
           favorites={slugs}
         />
@@ -104,8 +103,7 @@ function HomePage() {
             title={row.title}
             items={withLogo(row.items as Channel[])}
             onOpen={open}
-            onDelete={remove}
-            onFavorite={(c) => toggle(c.slug)}
+              onFavorite={(c) => toggle(c.slug)}
             favorites={slugs}
           />
         ))}
@@ -120,7 +118,6 @@ function HomePage() {
         <PlayerModal
           channel={active}
           onClose={() => setActive(null)}
-          onDelete={remove}
           onFavorite={(c) => toggle(c.slug)}
           isFavorite={slugs.includes(active.slug)}
         />

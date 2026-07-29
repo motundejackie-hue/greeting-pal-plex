@@ -149,8 +149,7 @@ function BrowsePage() {
                   setActive(ch);
                   push(ch.slug);
                 }}
-                onDelete={remove}
-                onFavorite={(ch) => toggle(ch.slug)}
+                      onFavorite={(ch) => toggle(ch.slug)}
                 isFavorite={slugs.includes(c.slug)}
               />
             ))}
@@ -178,7 +177,6 @@ function BrowsePage() {
         <PlayerModal
           channel={active}
           onClose={() => setActive(null)}
-          onDelete={remove}
           onFavorite={(c) => toggle(c.slug)}
           isFavorite={slugs.includes(active.slug)}
         />
