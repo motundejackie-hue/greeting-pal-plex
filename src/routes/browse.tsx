@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -9,7 +9,6 @@ import { ChannelCard } from "@/components/tv/ChannelCard";
 import { PlayerModal } from "@/components/tv/PlayerModal";
 import { useAuth } from "@/hooks/use-auth";
 import { useFavorites, useRecent } from "@/lib/favorites";
-import { deleteChannelForever } from "@/lib/tv-store";
 
 type Search = { q?: string; country?: string; category?: string };
 
@@ -48,7 +47,6 @@ function BrowsePage() {
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<Channel[]>([]);
   const [active, setActive] = useState<Channel | null>(null);
-  const [deleted, setDeleted] = useState<string[]>([]);
   const [term, setTerm] = useState(search.q ?? "");
 
   useEffect(() => {
@@ -72,19 +70,10 @@ function BrowsePage() {
     if (result.data) setItems((prev) => (page === 1 ? result.data.items : [...prev, ...result.data.items]));
   }, [result.data, page]);
 
-  const remove = useCallback(async (c: Channel) => {
-    setDeleted((prev) => [...prev, c.slug]);
-    try {
-      await deleteChannelForever(c);
-    } catch {
-      /* sign in to make it permanent */
-    }
-  }, []);
-
   const apply = (patch: Partial<Search>) =>
     void navigate({ search: (prev: Search) => ({ ...prev, ...patch }) });
 
-  const visible = items.filter((c) => !deleted.includes(c.slug));
+  const visible = items;
   const total = result.data?.total ?? 0;
 
   return (
@@ -149,8 +138,7 @@ function BrowsePage() {
                   setActive(ch);
                   push(ch.slug);
                 }}
-                onDelete={remove}
-                onFavorite={(ch) => toggle(ch.slug)}
+                      onFavorite={(ch) => toggle(ch.slug)}
                 isFavorite={slugs.includes(c.slug)}
               />
             ))}
@@ -178,7 +166,6 @@ function BrowsePage() {
         <PlayerModal
           channel={active}
           onClose={() => setActive(null)}
-          onDelete={remove}
           onFavorite={(c) => toggle(c.slug)}
           isFavorite={slugs.includes(active.slug)}
         />

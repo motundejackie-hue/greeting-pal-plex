@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Heart, Loader2, Maximize2, Trash2, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowLeft, Heart, Loader2, Maximize2, Volume2, VolumeX, X } from "lucide-react";
 import type { Channel } from "@/lib/channel-types";
 import { countryFlag } from "@/lib/channel-types";
 import { ChannelLogo } from "@/components/tv/ChannelLogo";
@@ -10,12 +10,11 @@ import { useHlsStream } from "@/hooks/use-hls";
 type Props = {
   channel: Channel;
   onClose: () => void;
-  onDelete?: (c: Channel) => void;
   onFavorite?: (c: Channel) => void;
   isFavorite?: boolean;
 };
 
-export function PlayerModal({ channel, onClose, onDelete, onFavorite, isFavorite }: Props) {
+export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props) {
   const [muted, setMuted] = useState(false);
   const shell = useRef<HTMLDivElement | null>(null);
   const sources = useQuery({
@@ -140,8 +139,7 @@ export function PlayerModal({ channel, onClose, onDelete, onFavorite, isFavorite
           {state === "error" ? (
             <div className="absolute inset-0 grid place-items-center bg-black/80 px-6 text-center">
               <p className="text-xs text-muted-foreground">
-                This stream isn&apos;t responding right now. Try another channel, or delete it from
-                the line-up.
+                This stream isn&apos;t responding right now. Trying backup sources…
               </p>
             </div>
           ) : null}
@@ -186,18 +184,6 @@ export function PlayerModal({ channel, onClose, onDelete, onFavorite, isFavorite
             >
               <Heart className={`h-3.5 w-3.5 ${isFavorite ? "fill-current text-primary" : ""}`} />
               {isFavorite ? "Saved" : "Save"}
-            </button>
-          ) : null}
-          {onDelete ? (
-            <button
-              type="button"
-              onClick={() => {
-                onDelete(channel);
-                onClose();
-              }}
-              className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs text-foreground hover:bg-destructive hover:text-destructive-foreground"
-            >
-              <Trash2 className="h-3.5 w-3.5" /> Delete
             </button>
           ) : null}
         </footer>
