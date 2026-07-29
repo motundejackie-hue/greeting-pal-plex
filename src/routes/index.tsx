@@ -11,7 +11,6 @@ import { PlayerModal } from "@/components/tv/PlayerModal";
 import { SplashScreen } from "@/components/SplashScreen";
 import { useAuth } from "@/hooks/use-auth";
 import { useFavorites, useRecent } from "@/lib/favorites";
-import { deleteChannelForever } from "@/lib/tv-store";
 
 const homeQuery = queryOptions({
   queryKey: ["home"],
@@ -53,7 +52,6 @@ function HomePage() {
   const { slugs, toggle } = useFavorites(user?.id ?? null);
   const { push } = useRecent();
   const [active, setActive] = useState<Channel | null>(null);
-  const [deleted, setDeleted] = useState<string[]>([]);
 
   const open = useCallback(
     (c: Channel) => {
@@ -63,17 +61,8 @@ function HomePage() {
     [push],
   );
 
-  const remove = useCallback(async (c: Channel) => {
-    setDeleted((prev) => [...prev, c.slug]);
-    try {
-      await deleteChannelForever(c);
-    } catch {
-      /* requires sign-in; local hide still applies for this session */
-    }
-  }, []);
-
   const withLogo = (items: Channel[]) =>
-    items.filter((c) => !deleted.includes(c.slug) && Boolean(c.logo));
+    items.filter((c) => Boolean(c.logo));
   const all = data.rows.flatMap((r) => r.items as Channel[]);
   const hero = data.hero;
 
