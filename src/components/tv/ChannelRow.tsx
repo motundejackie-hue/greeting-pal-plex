@@ -7,12 +7,11 @@ type Props = {
   title: string;
   items: Channel[];
   onOpen: (c: Channel) => void;
-  onDelete?: (c: Channel) => void;
   onFavorite?: (c: Channel) => void;
   favorites?: string[];
 };
 
-export function ChannelRow({ title, items, onOpen, onDelete, onFavorite, favorites }: Props) {
+export function ChannelRow({ title, items, onOpen, onFavorite, favorites }: Props) {
   const scroller = useRef<HTMLDivElement | null>(null);
 
   const nudge = (dir: -1 | 1) => {
@@ -24,9 +23,9 @@ export function ChannelRow({ title, items, onOpen, onDelete, onFavorite, favorit
   if (items.length === 0) return null;
 
   return (
-    <section className="mb-10">
+    <section className="mb-9">
       <div className="mb-3 flex items-center justify-between gap-3 px-5 md:px-12">
-        <h2 className="truncate text-base font-semibold text-foreground md:text-xl">{title}</h2>
+        <h2 className="truncate text-base font-semibold text-foreground md:text-lg">{title}</h2>
         <div className="hidden gap-1.5 md:flex">
           <button
             type="button"
@@ -48,20 +47,19 @@ export function ChannelRow({ title, items, onOpen, onDelete, onFavorite, favorit
       </div>
       <div
         ref={scroller}
-        className="no-scrollbar flex snap-x gap-4 overflow-x-auto scroll-smooth px-5 pb-2 md:gap-5 md:px-12"
+        className="no-scrollbar flex snap-x gap-3.5 overflow-x-auto scroll-smooth px-5 pb-2 md:gap-4 md:px-12"
       >
-        {items.slice(0, 12).map((c) => (
+        {items.slice(0, 14).map((c) => (
           <div
             key={`${c.slug}-${c.streamUrl}`}
-            className="w-[220px] shrink-0 snap-start sm:w-[280px] md:w-[340px]"
+            className="w-[160px] shrink-0 snap-start sm:w-[200px] md:w-[240px]"
           >
             <ChannelCard
               channel={c}
               onOpen={onOpen}
-              onDelete={onDelete}
               onFavorite={onFavorite}
               isFavorite={favorites?.includes(c.slug)}
-              size="lg"
+              size="md"
             />
           </div>
         ))}

@@ -9,7 +9,8 @@ type Options = { muted?: boolean; autoPlay?: boolean; fallbacks?: string[] };
 
 /**
  * Attaches an HLS stream to a video element. Every source (primary link first,
- * then backup links from other providers) is tried direct -> app proxy -> CORS proxy.
+ * then backup links from other providers) is tried direct -> app proxy -> CORS
+ * proxy, and the loop keeps going until one of them plays.
  */
 export function useHlsStream(url: string | null, options: Options = {}) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -31,6 +32,7 @@ export function useHlsStream(url: string | null, options: Options = {}) {
 
     let cancelled = false;
     let stage = 0;
+    let timer: number | undefined;
     const sources = [url, ...(options.fallbacks ?? []).filter((u) => u && u !== url)];
     const candidates = sources.flatMap((src, i) => {
       const tag = i === 0 ? "" : ` · backup ${i}`;
@@ -41,10 +43,16 @@ export function useHlsStream(url: string | null, options: Options = {}) {
       ];
     });
 
-
     const cleanup = () => {
+      if (timer) window.clearTimeout(timer);
+      timer = undefined;
       hlsRef.current?.destroy();
       hlsRef.current = null;
+    };
+
+    const next = () => {
+      stage += 1;
+      attach();
     };
 
     const attach = () => {
@@ -60,19 +68,35 @@ export function useHlsStream(url: string | null, options: Options = {}) {
 
       const isHls = href.includes(".m3u8") || href.includes("stream-proxy") || href.includes(PROXY);
 
+      // Don't sit forever on a dead source — move to the next candidate fast.
+      timer = window.setTimeout(() => {
+        if (!cancelled) next();
+      }, 9000);
+
       if (Hls.isSupported() && isHls) {
         const hls = new Hls({
-          maxBufferLength: 30,
+          // Fast start: fetch a small buffer first, then grow it for smoothness.
+          maxBufferLength: 20,
+          maxMaxBufferLength: 60,
+          backBufferLength: 30,
+          maxBufferSize: 40 * 1000 * 1000,
           enableWorker: true,
-          lowLatencyMode: true,
-          abrEwmaDefaultEstimate: 800000,
+          lowLatencyMode: false,
+          progressive: true,
           startLevel: -1,
+          testBandwidth: false,
+          abrEwmaDefaultEstimate: 1500000,
+          manifestLoadingTimeOut: 8000,
+          manifestLoadingMaxRetry: 1,
+          levelLoadingTimeOut: 8000,
+          fragLoadingTimeOut: 15000,
         });
         hlsRef.current = hls;
         hls.loadSource(href);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           if (cancelled) return;
+          if (timer) window.clearTimeout(timer);
           setLevels(
             hls.levels.map((l, i) => ({
               index: i,
@@ -84,27 +108,24 @@ export function useHlsStream(url: string | null, options: Options = {}) {
         });
         hls.on(Hls.Events.ERROR, (_e, data) => {
           if (!data.fatal || cancelled) return;
-          if (data.type === Hls.ErrorTypes.NETWORK_ERROR && stage < candidates.length - 1) {
-            stage += 1;
-            attach();
-          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+          if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
             hls.recoverMediaError();
           } else {
-            stage += 1;
-            attach();
+            next();
           }
         });
       } else {
+        video.preload = "auto";
         video.src = href;
         const onReady = () => {
           if (cancelled) return;
+          if (timer) window.clearTimeout(timer);
           setState("playing");
           if (options.autoPlay !== false) video.play().catch(() => undefined);
         };
         const onFail = () => {
           if (cancelled) return;
-          stage += 1;
-          attach();
+          next();
         };
         video.addEventListener("loadedmetadata", onReady, { once: true });
         video.addEventListener("error", onFail, { once: true });
@@ -112,6 +133,7 @@ export function useHlsStream(url: string | null, options: Options = {}) {
     };
 
     video.muted = options.muted ?? false;
+    video.preload = "auto";
     attach();
 
     return () => {
