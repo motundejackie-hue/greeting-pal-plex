@@ -69,13 +69,13 @@ function FavoritesPage() {
             </Link>
           </div>
         ) : isLoading ? (
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {Array.from({ length: 12 }).map((_, i) => (
               <div key={i} className="aspect-video animate-pulse rounded-xl bg-card" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {items.map((c) => (
               <ChannelCard
                 key={c.slug}
@@ -83,7 +83,7 @@ function FavoritesPage() {
                 onOpen={open}
                 onFavorite={(ch) => toggle(ch.slug)}
                 isFavorite
-                size="sm"
+                size="md"
               />
             ))}
           </div>
