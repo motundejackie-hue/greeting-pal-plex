@@ -1,6 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Heart, Loader2, Maximize2, Volume2, VolumeX, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Heart,
+  Loader2,
+  Maximize2,
+  RefreshCw,
+  SkipForward,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
+
 import type { Channel } from "@/lib/channel-types";
 import { countryFlag } from "@/lib/channel-types";
 import { ChannelLogo } from "@/components/tv/ChannelLogo";
