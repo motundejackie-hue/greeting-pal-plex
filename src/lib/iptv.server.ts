@@ -227,12 +227,13 @@ async function build(): Promise<Catalog> {
   const playlists = await Promise.allSettled(
     PLAYLISTS.map(async (p) => {
       const text = await grab(p.url, p.headers);
-      return text ? parseM3U(text, p.source) : [];
+      return text ? parseM3U(text, p.source, p.forceCategories ?? []) : [];
     }),
   );
   for (const r of playlists) if (r.status === "fulfilled") merged.push(...r.value);
 
-  // Dedupe: keep the best stream per channel slug, and never repeat a URL.
+  // Dedupe by channel name (slug = normalized name), keeping every distinct URL
+  // as a backup source so the player can walk through them.
   const seenUrls = new Set<string>();
   const alternates: Record<string, string[]> = {};
   const best = new Map<string, Channel>();
@@ -248,21 +249,22 @@ async function build(): Promise<Catalog> {
     // merge metadata
     current.logo = current.logo ?? c.logo;
     current.country = current.country ?? c.country;
-    if (current.categories.length === 0) current.categories = c.categories;
+    current.categories = [...new Set([...current.categories, ...c.categories])];
     if (current.languages.length === 0) current.languages = c.languages;
     const better =
       qualityRank(c.quality) > qualityRank(current.quality) ||
       (current.streamUrl.includes(".m3u8") === false && c.streamUrl.includes(".m3u8"));
     const list = (alternates[c.slug] ??= []);
     if (better) {
-      if (list.length < 6 && !list.includes(current.streamUrl)) list.push(current.streamUrl);
+      if (list.length < 12 && !list.includes(current.streamUrl)) list.push(current.streamUrl);
       current.streamUrl = c.streamUrl;
       current.quality = c.quality ?? current.quality;
       current.source = c.source;
-    } else if (list.length < 6 && !list.includes(c.streamUrl)) {
+    } else if (list.length < 12 && !list.includes(c.streamUrl)) {
       list.push(c.streamUrl);
     }
   }
+
 
   const channels = [...best.values()];
 
