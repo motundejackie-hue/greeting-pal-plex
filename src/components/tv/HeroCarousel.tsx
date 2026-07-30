@@ -98,8 +98,10 @@ export function HeroCarousel({ featured, onPlay, totalChannels }: Props) {
           />
         ))}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/75 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/20 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background/70 to-transparent md:h-1/3" />
+        <div className="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-background/75 via-background/10 to-transparent md:w-2/3" />
+
 
         <div className="absolute inset-0 flex flex-col justify-end gap-3 px-5 pb-10 md:max-w-2xl md:justify-center md:px-12 md:pb-0">
           <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-primary">
