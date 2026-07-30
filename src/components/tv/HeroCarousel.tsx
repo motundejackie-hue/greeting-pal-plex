@@ -153,7 +153,7 @@ export function HeroCarousel({ featured, onPlay, totalChannels }: Props) {
               loading="lazy"
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            <span className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/25 to-transparent" />
+            <span className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/10 to-transparent" />
             <span className="absolute inset-x-0 bottom-0 truncate px-3 pb-2 text-[11px] font-semibold text-foreground md:text-sm">
               {c.title}
             </span>
