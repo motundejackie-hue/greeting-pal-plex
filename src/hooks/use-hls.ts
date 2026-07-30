@@ -10,7 +10,8 @@ type Options = { muted?: boolean; autoPlay?: boolean; fallbacks?: string[] };
 /**
  * Attaches an HLS stream to a video element. Every source (primary link first,
  * then backup links from other providers) is tried direct -> app proxy -> CORS
- * proxy, and the loop keeps going until one of them plays.
+ * proxy, and the loop keeps going until one of them plays. `retry` re-attaches
+ * the current candidate; `skip` jumps straight to the next one.
  */
 export function useHlsStream(url: string | null, options: Options = {}) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -19,12 +20,20 @@ export function useHlsStream(url: string | null, options: Options = {}) {
   const [levels, setLevels] = useState<{ index: number; label: string }[]>([]);
   const [level, setLevelState] = useState(-1);
   const [attemptLabel, setAttemptLabel] = useState("Direct");
+  const [attempt, setAttempt] = useState({ index: 0, total: 1 });
+  const controls = useRef<{ retry: () => void; skip: () => void }>({
+    retry: () => undefined,
+    skip: () => undefined,
+  });
   const fallbackKey = (options.fallbacks ?? []).join("|");
 
   const setLevel = useCallback((index: number) => {
     if (hlsRef.current) hlsRef.current.currentLevel = index;
     setLevelState(index);
   }, []);
+
+  const retry = useCallback(() => controls.current.retry(), []);
+  const skip = useCallback(() => controls.current.skip(), []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -59,10 +68,12 @@ export function useHlsStream(url: string | null, options: Options = {}) {
       if (cancelled) return;
       if (stage >= candidates.length) {
         setState("error");
+        setAttempt({ index: candidates.length, total: candidates.length });
         return;
       }
       const { label, href } = candidates[stage];
       setAttemptLabel(label);
+      setAttempt({ index: stage + 1, total: candidates.length });
       setState("loading");
       cleanup();
 
@@ -132,6 +143,21 @@ export function useHlsStream(url: string | null, options: Options = {}) {
       }
     };
 
+    controls.current = {
+      retry: () => {
+        if (stage >= candidates.length) stage = 0;
+        attach();
+      },
+      skip: () => {
+        if (stage >= candidates.length) {
+          stage = 0;
+          attach();
+        } else {
+          next();
+        }
+      },
+    };
+
     video.muted = options.muted ?? false;
     video.preload = "auto";
     attach();
@@ -143,5 +169,5 @@ export function useHlsStream(url: string | null, options: Options = {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, options.muted, fallbackKey]);
 
-  return { videoRef, state, levels, level, setLevel, attemptLabel };
+  return { videoRef, state, levels, level, setLevel, attemptLabel, attempt, retry, skip };
 }
