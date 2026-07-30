@@ -5,31 +5,86 @@ import type { Channel, CountryInfo, CategoryInfo } from "./channel-types";
 export type { Channel, CountryInfo, CategoryInfo };
 
 const API = process.env.IPTV_API_URL ?? "https://iptv-org.github.io/api/";
-const PLAYLISTS: { url: string; source: string; headers?: Record<string, string> }[] = [
+const PLAYLISTS: {
+  url: string;
+  source: string;
+  headers?: Record<string, string>;
+  /** Force these categories onto every channel parsed from this playlist. */
+  forceCategories?: string[];
+}[] = [
   { url: "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8", source: "free-tv" },
+  { url: "https://iptv-org.github.io/iptv/index.m3u", source: "iptv-org-m3u" },
+
+  // ---- Sports playlists (all merged into the Sports section) ----
+  {
+    url: "https://iptv-org.github.io/iptv/categories/sports.m3u",
+    source: "iptv-org-sports",
+    forceCategories: ["sports"],
+  },
   {
     url: "https://bit.ly/topembed-m3u1-all",
     source: "topembed",
-    headers: { Referer: "https://topembed.pw/" },
+    headers: { Referer: "https://topembed.pw/", Origin: "https://topembed.pw" },
+    forceCategories: ["sports"],
   },
+  {
+    url: "https://bit.ly/ddy-m3u1-all",
+    source: "daddylive",
+    headers: {
+      Referer: "https://daddylive.dad/",
+      Origin: "https://daddylive.dad",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+    },
+    forceCategories: ["sports"],
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/T-Sports-Playlist-Auto-Update/refs/heads/main/universal_player.m3u",
+    source: "t-sports",
+    forceCategories: ["sports"],
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/T-Sports-Playlist-Auto-Update/main/playlist.m3u",
+    source: "t-sports-legacy",
+    forceCategories: ["sports"],
+  },
+  {
+    url: "https://raw.githubusercontent.com/twoonethree/IPTV/master/Sports.m3u",
+    source: "twoonethree",
+    forceCategories: ["sports"],
+  },
+  {
+    url: "https://raw.githubusercontent.com/twoonethree/IPTV/main/Sports.m3u",
+    source: "twoonethree-main",
+    forceCategories: ["sports"],
+  },
+  // IPTV-Scraper-Zilla — latest outputs
   {
     url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/output.m3u",
     source: "zilla",
   },
   {
-    url: "https://raw.githubusercontent.com/abusaeeidx/T-Sports-Playlist-Auto-Update/main/playlist.m3u",
-    source: "t-sports",
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/refs/heads/main/index.m3u",
+    source: "zilla-index",
   },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/refs/heads/main/Sports.m3u",
+    source: "zilla-sports",
+    forceCategories: ["sports"],
+  },
+  // streamed.su sports
   {
     url: "https://raw.githubusercontent.com/dtankdempse/streamed-su-sports/main/playlist.m3u",
     source: "streamed-su",
+    forceCategories: ["sports"],
   },
   {
-    url: "https://raw.githubusercontent.com/twoonethree/IPTV/main/Sports.m3u",
-    source: "twoonethree",
+    url: "https://raw.githubusercontent.com/dtankdempse/streamed-su-sports/refs/heads/main/playlist.m3u8",
+    source: "streamed-su-alt",
+    forceCategories: ["sports"],
   },
-  { url: "https://iptv-org.github.io/iptv/index.m3u", source: "iptv-org-m3u" },
 ];
+
 
 const TTL = 24 * 60 * 60 * 1000;
 
