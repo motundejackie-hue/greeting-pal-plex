@@ -134,7 +134,7 @@ function qualityRank(q: string | null): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-function parseM3U(text: string, source: string): Channel[] {
+function parseM3U(text: string, source: string, forceCategories: string[] = []): Channel[] {
   const out: Channel[] = [];
   const lines = text.split(/\r?\n/);
   let pending: Partial<Channel> | null = null;
@@ -146,12 +146,20 @@ function parseM3U(text: string, source: string): Channel[] {
         pending = null;
         continue;
       }
+      const group = attr(line, "group-title");
+      const cats = new Set<string>(forceCategories);
+      if (group) {
+        const g = group.toLowerCase();
+        cats.add(g);
+        if (/sport|football|soccer|nba|nfl|ufc|cricket|rugby|tennis|f1|motorsport/.test(g))
+          cats.add("sports");
+      }
       pending = {
         name,
         logo: attr(line, "tvg-logo"),
         country: attr(line, "tvg-country"),
         languages: attr(line, "tvg-language") ? [attr(line, "tvg-language")!] : [],
-        categories: attr(line, "group-title") ? [attr(line, "group-title")!.toLowerCase()] : [],
+        categories: [...cats],
         source,
       };
     } else if (line && !line.startsWith("#") && pending) {
@@ -171,6 +179,7 @@ function parseM3U(text: string, source: string): Channel[] {
   }
   return out;
 }
+
 
 type OrgChannel = {
   id: string;
