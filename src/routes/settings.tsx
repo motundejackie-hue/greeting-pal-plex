@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Eraser, Globe, LogOut, RotateCcw, Sparkles, Wifi } from "lucide-react";
+import { Eraser, Globe, ImagePlus, LogOut, RotateCcw, Sparkles, Wifi } from "lucide-react";
 import { AppShell } from "@/components/tv/AppShell";
 import { useSettings } from "@/lib/settings";
 import { clearCache } from "@/lib/offline-cache";
