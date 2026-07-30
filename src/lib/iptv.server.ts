@@ -5,31 +5,87 @@ import type { Channel, CountryInfo, CategoryInfo } from "./channel-types";
 export type { Channel, CountryInfo, CategoryInfo };
 
 const API = process.env.IPTV_API_URL ?? "https://iptv-org.github.io/api/";
-const PLAYLISTS: { url: string; source: string; headers?: Record<string, string> }[] = [
+const PLAYLISTS: {
+  url: string;
+  source: string;
+  headers?: Record<string, string>;
+  /** Force these categories onto every channel parsed from this playlist. */
+  forceCategories?: string[];
+}[] = [
   { url: "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8", source: "free-tv" },
+  { url: "https://iptv-org.github.io/iptv/index.m3u", source: "iptv-org-m3u" },
+
+  // ---- Sports playlists (all merged into the Sports section) ----
   {
-    url: "https://bit.ly/topembed-m3u1-all",
+    url: "https://iptv-org.github.io/iptv/categories/sports.m3u",
+    source: "iptv-org-sports",
+    forceCategories: ["sports"],
+  },
+  // topembed (live sports events) — verified GitHub mirror of the bit.ly list
+  {
+    url: "https://raw.githubusercontent.com/hispaniaestable/topembed-m3u/main/all_channels/playlist.m3u8",
     source: "topembed",
-    headers: { Referer: "https://topembed.pw/" },
+    headers: { Referer: "https://topembed.pw/", Origin: "https://topembed.pw" },
+    forceCategories: ["sports"],
   },
   {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/output.m3u",
-    source: "zilla",
+    url: "https://bit.ly/topembed-m3u1-all",
+    source: "topembed-short",
+    headers: { Referer: "https://topembed.pw/", Origin: "https://topembed.pw" },
+    forceCategories: ["sports"],
+  },
+  {
+    url: "https://bit.ly/ddy-m3u1-all",
+    source: "daddylive",
+    headers: {
+      Referer: "https://daddylive.dad/",
+      Origin: "https://daddylive.dad",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+    },
+    forceCategories: ["sports"],
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/T-Sports-Playlist-Auto-Update/refs/heads/main/universal_player.m3u",
+    source: "t-sports",
+    forceCategories: ["sports"],
   },
   {
     url: "https://raw.githubusercontent.com/abusaeeidx/T-Sports-Playlist-Auto-Update/main/playlist.m3u",
-    source: "t-sports",
+    source: "t-sports-legacy",
+    forceCategories: ["sports"],
   },
   {
-    url: "https://raw.githubusercontent.com/dtankdempse/streamed-su-sports/main/playlist.m3u",
-    source: "streamed-su",
-  },
-  {
-    url: "https://raw.githubusercontent.com/twoonethree/IPTV/main/Sports.m3u",
+    url: "https://raw.githubusercontent.com/twoonethree/IPTV/master/Sports.m3u",
     source: "twoonethree",
+    forceCategories: ["sports"],
   },
-  { url: "https://iptv-org.github.io/iptv/index.m3u", source: "iptv-org-m3u" },
+  // IPTV-Scraper-Zilla — current outputs
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/combined-playlist.m3u",
+    source: "zilla",
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/CricHD.m3u",
+    source: "zilla-crichd",
+    forceCategories: ["sports"],
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/Pixelsports.m3u",
+    source: "zilla-pixelsports",
+    forceCategories: ["sports"],
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/TVPass.m3u",
+    source: "zilla-tvpass",
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/LGTV.m3u",
+    source: "zilla-lgtv",
+  },
 ];
+
+
 
 const TTL = 24 * 60 * 60 * 1000;
 
@@ -79,7 +135,7 @@ function qualityRank(q: string | null): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-function parseM3U(text: string, source: string): Channel[] {
+function parseM3U(text: string, source: string, forceCategories: string[] = []): Channel[] {
   const out: Channel[] = [];
   const lines = text.split(/\r?\n/);
   let pending: Partial<Channel> | null = null;
@@ -91,12 +147,20 @@ function parseM3U(text: string, source: string): Channel[] {
         pending = null;
         continue;
       }
+      const group = attr(line, "group-title");
+      const cats = new Set<string>(forceCategories);
+      if (group) {
+        const g = group.toLowerCase();
+        cats.add(g);
+        if (/sport|football|soccer|nba|nfl|ufc|cricket|rugby|tennis|f1|motorsport/.test(g))
+          cats.add("sports");
+      }
       pending = {
         name,
         logo: attr(line, "tvg-logo"),
         country: attr(line, "tvg-country"),
         languages: attr(line, "tvg-language") ? [attr(line, "tvg-language")!] : [],
-        categories: attr(line, "group-title") ? [attr(line, "group-title")!.toLowerCase()] : [],
+        categories: [...cats],
         source,
       };
     } else if (line && !line.startsWith("#") && pending) {
@@ -116,6 +180,7 @@ function parseM3U(text: string, source: string): Channel[] {
   }
   return out;
 }
+
 
 type OrgChannel = {
   id: string;
@@ -163,12 +228,13 @@ async function build(): Promise<Catalog> {
   const playlists = await Promise.allSettled(
     PLAYLISTS.map(async (p) => {
       const text = await grab(p.url, p.headers);
-      return text ? parseM3U(text, p.source) : [];
+      return text ? parseM3U(text, p.source, p.forceCategories ?? []) : [];
     }),
   );
   for (const r of playlists) if (r.status === "fulfilled") merged.push(...r.value);
 
-  // Dedupe: keep the best stream per channel slug, and never repeat a URL.
+  // Dedupe by channel name (slug = normalized name), keeping every distinct URL
+  // as a backup source so the player can walk through them.
   const seenUrls = new Set<string>();
   const alternates: Record<string, string[]> = {};
   const best = new Map<string, Channel>();
@@ -184,21 +250,22 @@ async function build(): Promise<Catalog> {
     // merge metadata
     current.logo = current.logo ?? c.logo;
     current.country = current.country ?? c.country;
-    if (current.categories.length === 0) current.categories = c.categories;
+    current.categories = [...new Set([...current.categories, ...c.categories])];
     if (current.languages.length === 0) current.languages = c.languages;
     const better =
       qualityRank(c.quality) > qualityRank(current.quality) ||
       (current.streamUrl.includes(".m3u8") === false && c.streamUrl.includes(".m3u8"));
     const list = (alternates[c.slug] ??= []);
     if (better) {
-      if (list.length < 6 && !list.includes(current.streamUrl)) list.push(current.streamUrl);
+      if (list.length < 12 && !list.includes(current.streamUrl)) list.push(current.streamUrl);
       current.streamUrl = c.streamUrl;
       current.quality = c.quality ?? current.quality;
       current.source = c.source;
-    } else if (list.length < 6 && !list.includes(c.streamUrl)) {
+    } else if (list.length < 12 && !list.includes(c.streamUrl)) {
       list.push(c.streamUrl);
     }
   }
+
 
   const channels = [...best.values()];
 
@@ -380,7 +447,7 @@ export function buildHome(catalog: Catalog, country: string | null) {
       {
         id: "sports",
         title: "Sports",
-        items: pick(catalog, (c) => c.categories.includes("sports"), 24),
+        items: pick(catalog, (c) => c.categories.includes("sports"), 60),
       },
       {
         id: "movies",

@@ -128,21 +128,22 @@ function BrowsePage() {
             {result.isLoading && page === 1 ? "Loading…" : `${total.toLocaleString()} channels`}
           </p>
 
-          <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {visible.map((c) => (
               <ChannelCard
                 key={`${c.slug}-${c.streamUrl}`}
                 channel={c}
-                size="sm"
+                size="md"
                 onOpen={(ch) => {
                   setActive(ch);
                   push(ch.slug);
                 }}
-                      onFavorite={(ch) => toggle(ch.slug)}
+                onFavorite={(ch) => toggle(ch.slug)}
                 isFavorite={slugs.includes(c.slug)}
               />
             ))}
           </div>
+
 
           {visible.length < total ? (
             <div className="py-8 text-center">

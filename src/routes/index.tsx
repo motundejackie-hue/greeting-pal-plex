@@ -90,12 +90,13 @@ function HomePage() {
           <ChannelRow
             key={row.id}
             title={row.title}
-            items={withLogo(row.items as Channel[])}
+            items={row.items as Channel[]}
             onOpen={open}
-              onFavorite={(c) => toggle(c.slug)}
+            onFavorite={(c) => toggle(c.slug)}
             favorites={slugs}
           />
         ))}
+
 
         <footer className="px-5 py-10 text-center text-[11px] text-muted-foreground md:px-12">
           Opencast · Free TV. Everywhere.

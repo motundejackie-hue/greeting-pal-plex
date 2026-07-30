@@ -1,6 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Heart, Loader2, Maximize2, Volume2, VolumeX, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Heart,
+  Loader2,
+  Maximize2,
+  RefreshCw,
+  SkipForward,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
+
 import type { Channel } from "@/lib/channel-types";
 import { countryFlag } from "@/lib/channel-types";
 import { ChannelLogo } from "@/components/tv/ChannelLogo";
@@ -22,13 +33,12 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
     queryFn: () => getStreamSources({ data: { slug: channel.slug } }),
     staleTime: 30 * 60 * 1000,
   });
-  const { videoRef, state, levels, level, setLevel, attemptLabel } = useHlsStream(
-    channel.streamUrl,
-    {
+  const { videoRef, state, levels, level, setLevel, attemptLabel, attempt, retry, skip } =
+    useHlsStream(channel.streamUrl, {
       muted,
       fallbacks: sources.data?.urls ?? [],
-    },
-  );
+    });
+
 
 
   const toggleFullscreen = () => {
@@ -108,8 +118,11 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-foreground">{channel.name}</p>
               <p className="truncate text-[10px] text-muted-foreground">
-                {countryFlag(channel.country)} {channel.categories[0] ?? "live"} · {attemptLabel}
+                {countryFlag(channel.country)} {channel.categories[0] ?? "live"} · {attemptLabel} (
+                {attempt.index}/{attempt.total})
               </p>
+
+
             </div>
           </div>
           <button
@@ -137,10 +150,19 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
             </div>
           ) : null}
           {state === "error" ? (
-            <div className="absolute inset-0 grid place-items-center bg-black/80 px-6 text-center">
+            <div className="absolute inset-0 grid place-content-center justify-items-center gap-3 bg-black/80 px-6 text-center">
               <p className="text-xs text-muted-foreground">
-                This stream isn&apos;t responding right now. Trying backup sources…
+                Every source for this channel failed. Retry, or start over from the first link.
               </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={retry}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-primary-foreground"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" /> Retry stream
+                </button>
+              </div>
             </div>
           ) : null}
         </div>
@@ -148,11 +170,26 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
         <footer className="flex flex-wrap items-center gap-2 px-3 py-2">
           <button
             type="button"
+            onClick={retry}
+            className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-foreground"
+          >
+            <RefreshCw className="h-3.5 w-3.5" /> Retry
+          </button>
+          <button
+            type="button"
+            onClick={skip}
+            className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-foreground"
+          >
+            <SkipForward className="h-3.5 w-3.5" /> Next source
+          </button>
+          <button
+            type="button"
             onClick={toggleFullscreen}
             className="inline-flex items-center gap-1.5 rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-primary-foreground"
           >
             <Maximize2 className="h-3.5 w-3.5" /> Fullscreen
           </button>
+
           <button
             type="button"
             onClick={() => setMuted((m) => !m)}

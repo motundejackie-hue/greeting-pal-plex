@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Eraser, Globe, LogOut, RotateCcw, Sparkles, Wifi } from "lucide-react";
+import { Eraser, Globe, ImagePlus, LogOut, RotateCcw, Sparkles, Wifi } from "lucide-react";
 import { AppShell } from "@/components/tv/AppShell";
 import { useSettings } from "@/lib/settings";
 import { clearCache } from "@/lib/offline-cache";
@@ -136,7 +136,20 @@ function SettingsPage() {
             </button>
           </Row>
 
+          <Row
+            title="Channel logos"
+            description="Search any station and drag & drop a new logo image to update its artwork."
+          >
+            <a
+              href="/logos"
+              className="inline-flex items-center gap-1.5 rounded-full bg-brand px-3 py-1.5 text-xs font-semibold text-primary-foreground"
+            >
+              <ImagePlus className="h-3.5 w-3.5" /> Update logos
+            </a>
+          </Row>
+
           <Row title="Hidden channels" description="Bring back every channel you deleted from the line-up.">
+
             <button
               type="button"
               onClick={async () => {

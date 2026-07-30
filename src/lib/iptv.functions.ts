@@ -71,5 +71,5 @@ export const getStreamSources = createServerFn({ method: "GET" })
     const urls = [channel?.streamUrl, ...alts].filter(
       (u): u is string => typeof u === "string" && u.startsWith("http"),
     );
-    return { urls: [...new Set(urls)].slice(0, 8) };
+    return { urls: [...new Set(urls)].slice(0, 16) };
   });
