@@ -107,8 +107,9 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-foreground">{channel.name}</p>
               <p className="truncate text-[10px] text-muted-foreground">
-                {countryFlag(channel.country)} {channel.categories[0] ?? "live"} · {attemptLabel}
-              </p>
+                {countryFlag(channel.country)} {channel.categories[0] ?? "live"} · {attemptLabel} (
+                {attempt.index}/{attempt.total})
+
             </div>
           </div>
           <button
