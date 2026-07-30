@@ -21,9 +21,16 @@ const PLAYLISTS: {
     source: "iptv-org-sports",
     forceCategories: ["sports"],
   },
+  // topembed (live sports events) — verified GitHub mirror of the bit.ly list
+  {
+    url: "https://raw.githubusercontent.com/hispaniaestable/topembed-m3u/main/all_channels/playlist.m3u8",
+    source: "topembed",
+    headers: { Referer: "https://topembed.pw/", Origin: "https://topembed.pw" },
+    forceCategories: ["sports"],
+  },
   {
     url: "https://bit.ly/topembed-m3u1-all",
-    source: "topembed",
+    source: "topembed-short",
     headers: { Referer: "https://topembed.pw/", Origin: "https://topembed.pw" },
     forceCategories: ["sports"],
   },
@@ -53,37 +60,31 @@ const PLAYLISTS: {
     source: "twoonethree",
     forceCategories: ["sports"],
   },
+  // IPTV-Scraper-Zilla — current outputs
   {
-    url: "https://raw.githubusercontent.com/twoonethree/IPTV/main/Sports.m3u",
-    source: "twoonethree-main",
-    forceCategories: ["sports"],
-  },
-  // IPTV-Scraper-Zilla — latest outputs
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/output.m3u",
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/combined-playlist.m3u",
     source: "zilla",
   },
   {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/refs/heads/main/index.m3u",
-    source: "zilla-index",
-  },
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/refs/heads/main/Sports.m3u",
-    source: "zilla-sports",
-    forceCategories: ["sports"],
-  },
-  // streamed.su sports
-  {
-    url: "https://raw.githubusercontent.com/dtankdempse/streamed-su-sports/main/playlist.m3u",
-    source: "streamed-su",
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/CricHD.m3u",
+    source: "zilla-crichd",
     forceCategories: ["sports"],
   },
   {
-    url: "https://raw.githubusercontent.com/dtankdempse/streamed-su-sports/refs/heads/main/playlist.m3u8",
-    source: "streamed-su-alt",
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/Pixelsports.m3u",
+    source: "zilla-pixelsports",
     forceCategories: ["sports"],
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/TVPass.m3u",
+    source: "zilla-tvpass",
+  },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/LGTV.m3u",
+    source: "zilla-lgtv",
   },
 ];
+
 
 
 const TTL = 24 * 60 * 60 * 1000;
