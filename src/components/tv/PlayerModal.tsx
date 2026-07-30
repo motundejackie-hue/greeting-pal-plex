@@ -22,13 +22,12 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
     queryFn: () => getStreamSources({ data: { slug: channel.slug } }),
     staleTime: 30 * 60 * 1000,
   });
-  const { videoRef, state, levels, level, setLevel, attemptLabel } = useHlsStream(
-    channel.streamUrl,
-    {
+  const { videoRef, state, levels, level, setLevel, attemptLabel, attempt, retry, skip } =
+    useHlsStream(channel.streamUrl, {
       muted,
       fallbacks: sources.data?.urls ?? [],
-    },
-  );
+    });
+
 
 
   const toggleFullscreen = () => {
