@@ -446,7 +446,7 @@ export function buildHome(catalog: Catalog, country: string | null) {
       {
         id: "sports",
         title: "Sports",
-        items: pick(catalog, (c) => c.categories.includes("sports"), 24),
+        items: pick(catalog, (c) => c.categories.includes("sports"), 400),
       },
       {
         id: "movies",
