@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TutorialsRouteImport } from './routes/tutorials'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as LogosRouteImport } from './routes/logos'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -31,6 +32,11 @@ const TestRoute = TestRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogosRoute = LogosRouteImport.update({
+  id: '/logos',
+  path: '/logos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/favorites': typeof FavoritesRoute
+  '/logos': typeof LogosRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
   '/tutorials': typeof TutorialsRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/favorites': typeof FavoritesRoute
+  '/logos': typeof LogosRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
   '/tutorials': typeof TutorialsRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/favorites': typeof FavoritesRoute
+  '/logos': typeof LogosRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
   '/tutorials': typeof TutorialsRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/favorites'
+    | '/logos'
     | '/settings'
     | '/test'
     | '/tutorials'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/favorites'
+    | '/logos'
     | '/settings'
     | '/test'
     | '/tutorials'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/favorites'
+    | '/logos'
     | '/settings'
     | '/test'
     | '/tutorials'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
   FavoritesRoute: typeof FavoritesRoute
+  LogosRoute: typeof LogosRoute
   SettingsRoute: typeof SettingsRoute
   TestRoute: typeof TestRoute
   TutorialsRoute: typeof TutorialsRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logos': {
+      id: '/logos'
+      path: '/logos'
+      fullPath: '/logos'
+      preLoaderRoute: typeof LogosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
   FavoritesRoute: FavoritesRoute,
+  LogosRoute: LogosRoute,
   SettingsRoute: SettingsRoute,
   TestRoute: TestRoute,
   TutorialsRoute: TutorialsRoute,
