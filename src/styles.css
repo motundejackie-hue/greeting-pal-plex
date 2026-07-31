@@ -142,6 +142,13 @@
   animation: hero-fade 10s ease-in-out infinite;
 }
 
+
+/* --- Input responsiveness: instant taps on buttons and links --- */
+button, a, [role="button"], input[type="range"], select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 @utility tap {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
