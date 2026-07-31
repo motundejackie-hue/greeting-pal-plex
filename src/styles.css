@@ -142,18 +142,6 @@
   animation: hero-fade 10s ease-in-out infinite;
 }
 
-/* --- Input responsiveness: instant taps, momentum scrolling --- */
-@layer base {
-  html, body {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    overscroll-behavior-y: none;
-  }
-  button, a, [role="button"] {
-    touch-action: manipulation;
-  }
-}
-
 @utility tap {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
