@@ -141,3 +141,58 @@
 @utility hero-slide {
   animation: hero-fade 10s ease-in-out infinite;
 }
+
+/* --- Input responsiveness: instant taps, momentum scrolling --- */
+@layer base {
+  html, body {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+  button, a, [role="button"] {
+    touch-action: manipulation;
+  }
+}
+
+@utility tap {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 120ms ease-out;
+  &:active { transform: scale(0.97); }
+}
+
+/* --- Logo skeleton (opacity-only so it stays compositor-cheap) --- */
+@keyframes logo-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+@utility logo-skeleton {
+  background-color: var(--secondary);
+  animation: logo-pulse 1.6s ease-in-out infinite;
+}
+
+/* --- Broadcast buffering rings --- */
+@keyframes broadcast-ring {
+  0% { transform: scale(0.55); opacity: 0.9; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@utility broadcast-ring {
+  animation: broadcast-ring 1.8s ease-out infinite;
+}
+
+/* --- Player intro: logo swells, then "Enjoy" fades away --- */
+@keyframes intro-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  35% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@utility intro-pop {
+  animation: intro-pop 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes intro-fade {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@utility intro-fade {
+  animation: intro-fade 2.2s ease-in forwards;
+}

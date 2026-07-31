@@ -49,10 +49,10 @@ export function ChannelRow({ title, items, onOpen, onFavorite, favorites }: Prop
         ref={scroller}
         className="no-scrollbar flex snap-x gap-3.5 overflow-x-auto scroll-smooth px-5 pb-2 md:gap-4 md:px-12"
       >
-        {items.slice(0, 14).map((c) => (
+        {items.slice(0, 20).map((c) => (
           <div
             key={`${c.slug}-${c.streamUrl}`}
-            className="w-[160px] shrink-0 snap-start sm:w-[200px] md:w-[240px]"
+            className="w-[118px] shrink-0 snap-start sm:w-[140px] md:w-[168px]"
           >
             <ChannelCard
               channel={c}
