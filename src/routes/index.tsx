@@ -52,6 +52,8 @@ function HomePage() {
   const { slugs, toggle } = useFavorites(user?.id ?? null);
   const { push } = useRecent();
   const [active, setActive] = useState<Channel | null>(null);
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
 
   const open = useCallback(
     (c: Channel) => {
@@ -61,8 +63,7 @@ function HomePage() {
     [push],
   );
 
-  const withLogo = (items: Channel[]) =>
-    items.filter((c) => Boolean(c.logo));
+  const withLogo = (items: Channel[]) => items.filter((c) => Boolean(c.logo));
   const all = data.rows.flatMap((r) => r.items as Channel[]);
   const hero = data.hero;
 
@@ -76,9 +77,35 @@ function HomePage() {
           totalChannels={data.total}
         />
 
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void navigate({ to: "/browse", search: { q: query } });
+          }}
+          className="mb-9 px-5 md:px-12"
+        >
+          <label className="flex min-w-0 items-center gap-3 rounded-2xl bg-secondary/70 px-5 py-3.5 ring-1 ring-border/60 focus-within:ring-2 focus-within:ring-primary/60">
+            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search channels"
+              aria-label="Search channels"
+              className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+            />
+            <button
+              type="submit"
+              className="tap shrink-0 rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-primary-foreground"
+            >
+              Search
+            </button>
+          </label>
+        </form>
+
         <ChannelRow
           title="Top picks for you"
-          items={withLogo(all).slice(0, 12)}
+          subtitle="Handpicked live channels, always on"
+          items={withLogo(all).slice(0, 16)}
           onOpen={open}
           onFavorite={(c) => toggle(c.slug)}
           favorites={slugs}
@@ -97,12 +124,10 @@ function HomePage() {
           />
         ))}
 
-
         <footer className="px-5 py-10 text-center text-[11px] text-muted-foreground md:px-12">
           Opencast · Free TV. Everywhere.
         </footer>
       </AppShell>
-
 
       {active ? (
         <PlayerModal
@@ -115,3 +140,4 @@ function HomePage() {
     </>
   );
 }
+
