@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  Expand,
   Heart,
-  Maximize2,
   Pause,
   Play,
   RefreshCw,
+  RotateCcw,
+  RotateCw,
+  Shrink,
   SkipForward,
-  Tv,
   Volume1,
   Volume2,
   VolumeX,
@@ -16,10 +18,10 @@ import {
 } from "lucide-react";
 
 import type { Channel } from "@/lib/channel-types";
-import { countryFlag } from "@/lib/channel-types";
 import { ChannelLogo } from "@/components/tv/ChannelLogo";
 import { getStreamSources } from "@/lib/iptv.functions";
 import { useHlsStream } from "@/hooks/use-hls";
+import { fetchStoredStream, storeWorkingStream } from "@/lib/stream-links";
 
 type Props = {
   channel: Channel;
@@ -28,12 +30,19 @@ type Props = {
   isFavorite?: boolean;
 };
 
+/** Seconds of real playback required before the "Enjoy" flourish appears. */
+const ENJOY_AFTER = 10;
+
 export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props) {
   const [muted, setMuted] = useState(false);
   const [volume, setVolume] = useState(1);
   const [paused, setPaused] = useState(false);
   const [intro, setIntro] = useState(false);
+  const [introDone, setIntroDone] = useState(false);
+  const [full, setFull] = useState(false);
+  const [uiVisible, setUiVisible] = useState(true);
   const shell = useRef<HTMLDivElement | null>(null);
+  const hideTimer = useRef<number | undefined>(undefined);
 
   const sources = useQuery({
     queryKey: ["stream-sources", channel.slug],
@@ -41,12 +50,27 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
     staleTime: 30 * 60 * 1000,
   });
 
-  const { videoRef, state, levels, level, setLevel, retry, skip } = useHlsStream(
-    channel.streamUrl,
+  const stored = useQuery({
+    queryKey: ["stored-stream", channel.slug],
+    queryFn: () => fetchStoredStream(channel.slug),
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const onWorking = useCallback(
+    (link: { url: string; mode: string }) => {
+      void storeWorkingStream(channel.slug, channel.name, link);
+    },
+    [channel.slug, channel.name],
+  );
+
+  const { videoRef, state, levels, level, setLevel, recovering, retry, skip } = useHlsStream(
+    stored.isLoading ? null : channel.streamUrl,
     {
       muted,
       cacheKey: channel.slug,
       fallbacks: sources.data?.urls ?? [],
+      preferred: stored.data ?? null,
+      onWorking,
     },
   );
 
@@ -84,11 +108,42 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
     }
   };
 
+  const seek = (delta: number) => {
+    const v = videoRef.current;
+    if (!v) return;
+    try {
+      v.currentTime = Math.max(0, v.currentTime + delta);
+    } catch {
+      /* live edge streams may refuse seeking */
+    }
+  };
+
+  const nudgeUi = () => {
+    setUiVisible(true);
+    if (hideTimer.current) window.clearTimeout(hideTimer.current);
+    hideTimer.current = window.setTimeout(() => setUiVisible(false), 3200);
+  };
+
+  useEffect(() => {
+    nudgeUi();
+    return () => {
+      if (hideTimer.current) window.clearTimeout(hideTimer.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onFs = () => setFull(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", onFs);
+    return () => document.removeEventListener("fullscreenchange", onFs);
+  }, []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       if (e.key.toLowerCase() === "f") toggleFullscreen();
       if (e.key.toLowerCase() === "m") setMuted((m) => !m);
+      if (e.key === "ArrowLeft") seek(-10);
+      if (e.key === "ArrowRight") seek(10);
       if (e.key === " ") {
         e.preventDefault();
         togglePlay();
@@ -106,106 +161,261 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
     v.volume = volume;
   }, [muted, volume, videoRef]);
 
-  // Video plays behind the curtain first, then the logo swells with "Enjoy".
+  // The stream must genuinely run for 10s before the logo swell + "Enjoy".
   useEffect(() => {
-    if (state !== "playing") return;
-    setIntro(true);
-    const id = window.setTimeout(() => setIntro(false), 2200);
-    return () => window.clearTimeout(id);
-  }, [state]);
+    if (state !== "playing" || introDone) return;
+    const v = videoRef.current;
+    if (!v) return;
+    let played = 0;
+    let last = v.currentTime;
+    const id = window.setInterval(() => {
+      if (v.paused) return;
+      const delta = v.currentTime - last;
+      last = v.currentTime;
+      if (delta > 0 && delta < 2) played += delta;
+      if (played >= ENJOY_AFTER) {
+        window.clearInterval(id);
+        setIntro(true);
+        setIntroDone(true);
+        window.setTimeout(() => setIntro(false), 2400);
+      }
+    }, 500);
+    return () => window.clearInterval(id);
+  }, [state, introDone, videoRef]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/85 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/90 p-0 backdrop-blur-sm sm:items-center sm:p-4">
       <div
         ref={shell}
-        className="w-full overflow-hidden rounded-t-2xl bg-card shadow-ember sm:max-w-2xl sm:rounded-2xl"
+        onMouseMove={nudgeUi}
+        onTouchStart={nudgeUi}
+        className="relative w-full overflow-hidden rounded-t-3xl bg-card shadow-ember ring-1 ring-border/60 sm:max-w-3xl sm:rounded-3xl"
       >
-        <header className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 py-2">
-          <button
-            type="button"
-            aria-label="Back"
-            onClick={onClose}
-            className="tap grid h-9 w-9 shrink-0 place-items-center rounded-full bg-secondary text-foreground hover:bg-muted"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </button>
-          <div className="flex min-w-0 items-center gap-2">
-            <div className="relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-md bg-secondary text-[10px] font-bold">
-              <ChannelLogo
-                channel={channel}
-                alt={channel.name}
-                className="h-full w-full object-contain p-0.5"
-                placeholderClassName="grid h-full w-full place-items-center text-[10px] font-bold"
-              />
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-foreground">{channel.name}</p>
-              <p className="truncate text-[10px] capitalize text-muted-foreground">
-                {countryFlag(channel.country)} {channel.categories[0] ?? "live"}
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            aria-label="Close player"
-            onClick={onClose}
-            className="tap grid h-9 w-9 shrink-0 place-items-center rounded-full bg-secondary text-foreground hover:bg-destructive hover:text-destructive-foreground"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </header>
-
         <div className="relative aspect-video w-full bg-black">
           <video
             ref={videoRef}
             playsInline
             autoPlay
             className="h-full w-full"
+            onClick={nudgeUi}
             onPlay={() => setPaused(false)}
             onPause={() => setPaused(true)}
           />
 
+          {/* Top bar: identity + close */}
+          <div
+            className={`pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-black/80 to-transparent p-3 transition-opacity duration-200 ${
+              uiVisible ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <div className="pointer-events-auto flex min-w-0 items-center gap-2">
+              <button
+                type="button"
+                aria-label="Back"
+                onClick={onClose}
+                className="tap grid h-9 w-9 shrink-0 place-items-center rounded-full bg-black/60 text-foreground backdrop-blur hover:bg-black/80"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">{channel.name}</p>
+                <p className="truncate text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                  {channel.categories[0] ?? "live"}
+                </p>
+              </div>
+            </div>
+            <div className="pointer-events-auto flex shrink-0 items-center gap-1.5">
+              {onFavorite ? (
+                <button
+                  type="button"
+                  onClick={() => onFavorite(channel)}
+                  aria-label={isFavorite ? "Saved" : "Save channel"}
+                  className="tap grid h-9 w-9 place-items-center rounded-full bg-black/60 text-foreground backdrop-blur hover:bg-black/80"
+                >
+                  <Heart className={`h-4 w-4 ${isFavorite ? "fill-current text-primary" : ""}`} />
+                </button>
+              ) : null}
+              <button
+                type="button"
+                aria-label="Close player"
+                onClick={onClose}
+                className="tap grid h-9 w-9 place-items-center rounded-full bg-black/60 text-foreground backdrop-blur hover:bg-destructive"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Centre controls, on screen */}
+          {state === "playing" ? (
+            <div
+              className={`absolute inset-0 grid place-items-center transition-opacity duration-200 ${
+                uiVisible ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
+            >
+              <div className="flex items-center gap-4 sm:gap-6">
+                <button
+                  type="button"
+                  aria-label="Back 10 seconds"
+                  onClick={() => seek(-10)}
+                  className="tap grid h-12 w-12 place-items-center rounded-full bg-black/55 text-foreground backdrop-blur hover:bg-black/75"
+                >
+                  <RotateCcw className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label={paused ? "Play" : "Pause"}
+                  onClick={togglePlay}
+                  className="tap grid h-16 w-16 place-items-center rounded-full bg-brand text-primary-foreground shadow-ember"
+                >
+                  {paused ? (
+                    <Play className="h-7 w-7 fill-current" />
+                  ) : (
+                    <Pause className="h-7 w-7 fill-current" />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  aria-label="Forward 10 seconds"
+                  onClick={() => seek(10)}
+                  className="tap grid h-12 w-12 place-items-center rounded-full bg-black/55 text-foreground backdrop-blur hover:bg-black/75"
+                >
+                  <RotateCw className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Bottom overlay strip: volume, quality, next feed, fullscreen */}
+          <div
+            className={`absolute inset-x-0 bottom-0 flex flex-wrap items-center gap-2 bg-gradient-to-t from-black/85 to-transparent px-3 pb-3 pt-8 transition-opacity duration-200 ${
+              uiVisible ? "opacity-100" : "pointer-events-none opacity-0"
+            }`}
+          >
+            <span className="live-dot rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-foreground backdrop-blur">
+              Live
+            </span>
+
+            <div className="flex items-center gap-2 rounded-full bg-black/55 px-3 py-1.5 backdrop-blur">
+              <button
+                type="button"
+                aria-label={muted ? "Unmute" : "Mute"}
+                onClick={() => setMuted((m) => !m)}
+                className="tap text-foreground"
+              >
+                {muted || volume === 0 ? (
+                  <VolumeX className="h-4 w-4" />
+                ) : volume < 0.5 ? (
+                  <Volume1 className="h-4 w-4" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
+              </button>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={muted ? 0 : volume}
+                aria-label="Volume"
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  setVolume(v);
+                  setMuted(v === 0);
+                }}
+                className="h-1 w-20 accent-[var(--primary)]"
+              />
+            </div>
+
+            {levels.length > 1 ? (
+              <select
+                aria-label="Quality"
+                value={level}
+                onChange={(e) => setLevel(Number(e.target.value))}
+                className="rounded-full bg-black/55 px-3 py-1.5 text-xs text-foreground backdrop-blur"
+              >
+                <option value={-1}>Auto</option>
+                {levels.map((l) => (
+                  <option key={l.index} value={l.index}>
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+            ) : null}
+
+            <button
+              type="button"
+              aria-label="Next feed"
+              onClick={skip}
+              className="tap ml-auto grid h-9 w-9 place-items-center rounded-full bg-black/55 text-foreground backdrop-blur hover:bg-black/80"
+            >
+              <SkipForward className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label={full ? "Exit fullscreen" : "Fullscreen"}
+              onClick={toggleFullscreen}
+              className="tap grid h-9 w-9 place-items-center rounded-full bg-black/55 text-foreground backdrop-blur hover:bg-black/80"
+            >
+              {full ? <Shrink className="h-4 w-4" /> : <Expand className="h-4 w-4" />}
+            </button>
+          </div>
+
           {state === "loading" ? (
             <div className="absolute inset-0 grid place-items-center overflow-hidden bg-black">
-              <div className="absolute inset-0 opacity-25">
+              <div className="absolute inset-0 opacity-20">
                 <ChannelLogo
                   channel={channel}
                   alt=""
                   loading="eager"
-                  className="absolute inset-0 h-full w-full scale-110 object-contain p-16 blur-2xl"
+                  className="absolute inset-0 h-full w-full scale-110 object-contain p-16 blur-3xl"
                   placeholderClassName="hidden"
                   skeletonClassName="hidden"
                 />
               </div>
-              <div className="relative grid place-items-center gap-4">
-                <span className="relative grid h-20 w-20 place-items-center">
-                  <span className="broadcast-ring absolute inset-0 rounded-full border border-primary/70" />
+              <div className="relative grid place-items-center gap-5">
+                <span className="relative grid h-28 w-28 place-items-center">
+                  <span className="broadcast-ring absolute inset-0 rounded-3xl border border-primary/60" />
                   <span
-                    className="broadcast-ring absolute inset-0 rounded-full border border-primary/70"
+                    className="broadcast-ring absolute inset-0 rounded-3xl border border-primary/60"
                     style={{ animationDelay: "0.6s" }}
                   />
                   <span
-                    className="broadcast-ring absolute inset-0 rounded-full border border-primary/70"
+                    className="broadcast-ring absolute inset-0 rounded-3xl border border-primary/60"
                     style={{ animationDelay: "1.2s" }}
                   />
-                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand">
-                    <Tv className="h-6 w-6 text-primary-foreground" />
+                  <span className="grid h-24 w-24 place-items-center overflow-hidden rounded-2xl bg-card ring-1 ring-border/70">
+                    <ChannelLogo
+                      channel={channel}
+                      alt=""
+                      loading="eager"
+                      className="h-full w-full object-contain p-3"
+                      placeholderClassName="grid h-full w-full place-items-center font-display text-xl font-bold text-foreground"
+                      skeletonClassName="absolute inset-0 logo-skeleton"
+                    />
                   </span>
                 </span>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-                  Broadcast buffering
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-display font-semibold text-foreground">Opencast</span>{" "}
+                  {recovering ? "is re-syncing the stream…" : "is buffering the stream…"}
                 </p>
-                <span className="h-0.5 w-40 overflow-hidden rounded-full bg-secondary">
-                  <span className="block h-full w-1/3 rounded-full bg-brand scan-sweep" />
+                <span className="flex items-end gap-1" aria-hidden="true">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <span
+                      key={i}
+                      className="signal-bar w-1 rounded-full bg-primary"
+                      style={{ height: `${8 + i * 5}px`, animationDelay: `${i * 0.12}s` }}
+                    />
+                  ))}
                 </span>
               </div>
             </div>
           ) : null}
 
           {state === "playing" && intro ? (
-            <div className="pointer-events-none absolute inset-0 grid place-items-center bg-black/55 intro-fade">
+            <div className="pointer-events-none absolute inset-0 grid place-items-center bg-black/60 intro-fade">
               <div className="grid place-items-center gap-3">
-                <span className="grid h-24 w-24 place-items-center overflow-hidden rounded-2xl bg-black/40 intro-pop">
+                <span className="grid h-28 w-28 place-items-center overflow-hidden rounded-2xl bg-black/40 intro-pop">
                   <ChannelLogo
                     channel={channel}
                     alt=""
@@ -215,7 +425,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
                     skeletonClassName="hidden"
                   />
                 </span>
-                <p className="font-display text-2xl font-bold tracking-tight text-foreground">
+                <p className="font-display text-3xl font-bold tracking-tight text-foreground">
                   Enjoy
                 </p>
               </div>
@@ -223,118 +433,29 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
           ) : null}
 
           {state === "error" ? (
-            <div className="absolute inset-0 grid place-content-center justify-items-center gap-3 bg-black/85 px-6 text-center">
+            <div className="absolute inset-0 grid place-content-center justify-items-center gap-3 bg-black/90 px-6 text-center">
               <p className="text-xs text-muted-foreground">
-                This channel isn&apos;t responding right now. Try again in a moment.
+                Every known link for this channel timed out. Try again — links often come back.
               </p>
-              <button
-                type="button"
-                onClick={retry}
-                className="tap inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-primary-foreground"
-              >
-                <RefreshCw className="h-3.5 w-3.5" /> Retry stream
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={retry}
+                  className="tap inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-semibold text-primary-foreground"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" /> Retry stream
+                </button>
+                <button
+                  type="button"
+                  onClick={skip}
+                  className="tap inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-xs font-semibold text-foreground"
+                >
+                  <SkipForward className="h-3.5 w-3.5" /> Next source
+                </button>
+              </div>
             </div>
           ) : null}
         </div>
-
-        <footer className="flex flex-wrap items-center gap-2 px-3 py-2.5">
-          <button
-            type="button"
-            aria-label={paused ? "Play" : "Pause"}
-            onClick={togglePlay}
-            className="tap grid h-10 w-10 place-items-center rounded-full bg-brand text-primary-foreground"
-          >
-            {paused ? (
-              <Play className="h-4 w-4 fill-current" />
-            ) : (
-              <Pause className="h-4 w-4 fill-current" />
-            )}
-          </button>
-          <button
-            type="button"
-            aria-label="Next feed"
-            onClick={skip}
-            className="tap grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground hover:bg-muted"
-          >
-            <SkipForward className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            aria-label="Reload feed"
-            onClick={retry}
-            className="tap grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground hover:bg-muted"
-          >
-            <RefreshCw className="h-4 w-4" />
-          </button>
-
-          <div className="flex items-center gap-2 rounded-full bg-secondary px-3 py-2">
-            <button
-              type="button"
-              aria-label={muted ? "Unmute" : "Mute"}
-              onClick={() => setMuted((m) => !m)}
-              className="tap text-foreground"
-            >
-              {muted || volume === 0 ? (
-                <VolumeX className="h-4 w-4" />
-              ) : volume < 0.5 ? (
-                <Volume1 className="h-4 w-4" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
-            </button>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.05}
-              value={muted ? 0 : volume}
-              aria-label="Volume"
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                setVolume(v);
-                setMuted(v === 0);
-              }}
-              className="h-1 w-20 accent-[var(--primary)]"
-            />
-          </div>
-
-          <button
-            type="button"
-            aria-label="Fullscreen"
-            onClick={toggleFullscreen}
-            className="tap grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground hover:bg-muted"
-          >
-            <Maximize2 className="h-4 w-4" />
-          </button>
-
-          {levels.length > 1 ? (
-            <select
-              aria-label="Quality"
-              value={level}
-              onChange={(e) => setLevel(Number(e.target.value))}
-              className="rounded-full bg-secondary px-3 py-2 text-xs text-foreground"
-            >
-              <option value={-1}>Auto</option>
-              {levels.map((l) => (
-                <option key={l.index} value={l.index}>
-                  {l.label}
-                </option>
-              ))}
-            </select>
-          ) : null}
-
-          {onFavorite ? (
-            <button
-              type="button"
-              onClick={() => onFavorite(channel)}
-              aria-label={isFavorite ? "Saved" : "Save channel"}
-              className="tap ml-auto grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground hover:bg-muted"
-            >
-              <Heart className={`h-4 w-4 ${isFavorite ? "fill-current text-primary" : ""}`} />
-            </button>
-          ) : null}
-        </footer>
       </div>
     </div>
   );

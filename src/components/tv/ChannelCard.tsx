@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Heart, ImagePlus, Play } from "lucide-react";
+import { ImagePlus, Play, Star } from "lucide-react";
 import type { Channel } from "@/lib/channel-types";
 import { ChannelLogo } from "./ChannelLogo";
 import { saveLogo } from "@/lib/tv-store";
@@ -40,50 +40,47 @@ function ChannelCardBase({ channel, onOpen, onFavorite, isFavorite }: Props) {
         aria-label={`Play ${channel.name}`}
         className="tap flex w-full flex-col text-left outline-none"
       >
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-card ring-1 ring-border/50 transition duration-200 group-hover:-translate-y-0.5 group-hover:ring-2 group-hover:ring-primary group-focus-visible:ring-2 group-focus-visible:ring-primary">
+        <div className="tile-surface relative aspect-video w-full overflow-hidden rounded-xl ring-1 ring-border/60 transition duration-200 group-hover:ring-2 group-hover:ring-primary/70 group-focus-visible:ring-2 group-focus-visible:ring-primary">
           <ChannelLogo
             channel={channel}
             alt={`${channel.name} logo`}
             loading="lazy"
-            className="absolute inset-0 h-full w-full object-contain p-6 transition-opacity duration-300"
-            skeletonClassName="absolute inset-0 logo-skeleton rounded-2xl"
-            placeholderClassName="absolute inset-0 grid place-items-center bg-card font-display text-xl font-bold text-muted-foreground"
+            className="absolute inset-0 h-full w-full object-contain p-7 transition-opacity duration-300"
+            skeletonClassName="absolute inset-0 logo-skeleton rounded-xl"
+            placeholderClassName="absolute inset-0 grid place-items-center font-display text-2xl font-bold text-muted-foreground"
           />
 
-          <span className="absolute left-2 top-2 rounded-md bg-primary px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary-foreground">
-            Live
-          </span>
-
-          <span className="pointer-events-none absolute inset-0 grid place-items-center bg-black/30 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-primary">
-              <Play className="h-4 w-4 fill-current text-primary-foreground" />
+          <span className="pointer-events-none absolute inset-0 grid place-items-center bg-black/35 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-brand shadow-ember">
+              <Play className="h-4.5 w-4.5 fill-current text-primary-foreground" />
             </span>
           </span>
         </div>
 
-        <p className="truncate px-1 pt-2 text-center text-[11px] font-medium text-foreground md:text-xs">
-          {channel.name}
+        <p className="truncate pt-2.5 text-[13px] font-semibold text-foreground">{channel.name}</p>
+        <p className="truncate text-[11px] text-muted-foreground">
+          {channel.categories[0] ?? "Live"}
         </p>
       </button>
 
-      <div className="pointer-events-none absolute right-1.5 top-9 flex flex-col gap-1.5 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+      <div className="absolute right-2 top-2 flex flex-col gap-1.5">
         {onFavorite ? (
           <button
             type="button"
             aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
             onClick={() => onFavorite(channel)}
-            className="tap grid h-7 w-7 place-items-center rounded-full bg-black/70 text-foreground backdrop-blur hover:bg-black"
+            className="tap grid h-8 w-8 place-items-center rounded-full bg-black/55 text-foreground backdrop-blur transition hover:bg-black/80"
           >
-            <Heart className={`h-3.5 w-3.5 ${isFavorite ? "fill-current text-primary" : ""}`} />
+            <Star className={`h-4 w-4 ${isFavorite ? "fill-current text-primary" : ""}`} />
           </button>
         ) : null}
         <button
           type="button"
           aria-label={`Paste a logo URL for ${channel.name}`}
           onClick={() => setEditing((e) => !e)}
-          className="tap grid h-7 w-7 place-items-center rounded-full bg-black/70 text-foreground backdrop-blur hover:bg-black"
+          className="tap grid h-8 w-8 place-items-center rounded-full bg-black/55 text-foreground opacity-0 backdrop-blur transition hover:bg-black/80 group-hover:opacity-100 group-focus-within:opacity-100"
         >
-          <ImagePlus className="h-3.5 w-3.5" />
+          <ImagePlus className="h-4 w-4" />
         </button>
       </div>
 
