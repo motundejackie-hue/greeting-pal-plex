@@ -73,7 +73,12 @@ const PLAYLISTS: {
     url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/LGTV.m3u",
     source: "zilla-lgtv",
   },
+  {
+    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/Moveonjoy.m3u",
+    source: "zilla-moveonjoy",
+  },
 ];
+
 
 
 
