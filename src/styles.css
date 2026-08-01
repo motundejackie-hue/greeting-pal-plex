@@ -194,3 +194,21 @@ button, a, [role="button"], input[type="range"], select {
 @utility intro-fade {
   animation: intro-fade 2.2s ease-in forwards;
 }
+
+/* --- Surfaces: deep graphite tiles + staged backdrop --- */
+@utility tile-surface {
+  background-image: var(--gradient-tile);
+}
+@utility bg-stage {
+  background-image: var(--gradient-stage);
+}
+
+/* --- Buffering signal bars --- */
+@keyframes signal-bar {
+  0%, 100% { transform: scaleY(0.35); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+@utility signal-bar {
+  transform-origin: bottom;
+  animation: signal-bar 1s ease-in-out infinite;
+}
