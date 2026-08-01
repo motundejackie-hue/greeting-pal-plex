@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Search } from "lucide-react";
+
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getHome } from "@/lib/iptv.functions";
 import type { Channel } from "@/lib/channel-types";
