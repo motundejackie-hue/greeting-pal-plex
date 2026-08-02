@@ -137,39 +137,6 @@ export type Database = {
         }
         Relationships: []
       }
-      tv_streams: {
-        Row: {
-          channel_slug: string
-          created_at: string
-          fails: number
-          id: string
-          mode: string
-          name: string | null
-          url: string
-          verified_at: string
-        }
-        Insert: {
-          channel_slug: string
-          created_at?: string
-          fails?: number
-          id?: string
-          mode?: string
-          name?: string | null
-          url: string
-          verified_at?: string
-        }
-        Update: {
-          channel_slug?: string
-          created_at?: string
-          fails?: number
-          id?: string
-          mode?: string
-          name?: string | null
-          url?: string
-          verified_at?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never

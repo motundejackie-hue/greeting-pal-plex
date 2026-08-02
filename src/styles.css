@@ -60,13 +60,10 @@
   --ring: oklch(0.48 0.19 25);
   --ember: oklch(0.48 0.19 25);
   --ember-foreground: oklch(0.98 0 0);
-  --gradient-brand: linear-gradient(135deg, oklch(0.38 0.18 25), oklch(0.54 0.21 25));
-  --gradient-brand-soft: linear-gradient(135deg, oklch(0.48 0.19 25 / 0.24), oklch(0.13 0 0 / 0.94));
-  --gradient-stage: radial-gradient(120% 90% at 50% 0%, oklch(0.24 0.06 25) 0%, oklch(0.13 0.01 25) 55%, oklch(0.09 0 0) 100%);
-  --gradient-tile: linear-gradient(160deg, oklch(0.20 0.01 25) 0%, oklch(0.13 0 0) 100%);
+  --gradient-brand: linear-gradient(135deg, oklch(0.38 0.18 25), oklch(0.52 0.20 25));
+  --gradient-brand-soft: linear-gradient(135deg, oklch(0.48 0.19 25 / 0.28), oklch(0.14 0 0 / 0.92));
   --shadow-ember: 0 12px 40px -12px oklch(0.48 0.19 25 / 0.55);
   --shadow-tv: 0 10px 30px -12px oklch(0 0 0 / 0.9);
-
 }
 
 @layer base {
@@ -193,22 +190,4 @@ button, a, [role="button"], input[type="range"], select {
 }
 @utility intro-fade {
   animation: intro-fade 2.2s ease-in forwards;
-}
-
-/* --- Surfaces: deep graphite tiles + staged backdrop --- */
-@utility tile-surface {
-  background-image: var(--gradient-tile);
-}
-@utility bg-stage {
-  background-image: var(--gradient-stage);
-}
-
-/* --- Buffering signal bars --- */
-@keyframes signal-bar {
-  0%, 100% { transform: scaleY(0.35); opacity: 0.5; }
-  50% { transform: scaleY(1); opacity: 1; }
-}
-@utility signal-bar {
-  transform-origin: bottom;
-  animation: signal-bar 1s ease-in-out infinite;
 }

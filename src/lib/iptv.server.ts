@@ -28,13 +28,23 @@ const PLAYLISTS: {
     headers: { Referer: "https://topembed.pw/", Origin: "https://topembed.pw" },
     forceCategories: ["sports"],
   },
-  // TheTVApp — live US sports channels (verified reachable)
   {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/TheTVApp.m3u8",
-    source: "thetvapp",
+    url: "https://bit.ly/topembed-m3u1-all",
+    source: "topembed-short",
+    headers: { Referer: "https://topembed.pw/", Origin: "https://topembed.pw" },
     forceCategories: ["sports"],
   },
-
+  {
+    url: "https://bit.ly/ddy-m3u1-all",
+    source: "daddylive",
+    headers: {
+      Referer: "https://daddylive.dad/",
+      Origin: "https://daddylive.dad",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+    },
+    forceCategories: ["sports"],
+  },
   {
     url: "https://raw.githubusercontent.com/abusaeeidx/T-Sports-Playlist-Auto-Update/refs/heads/main/universal_player.m3u",
     source: "t-sports",
@@ -73,12 +83,7 @@ const PLAYLISTS: {
     url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/LGTV.m3u",
     source: "zilla-lgtv",
   },
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/Moveonjoy.m3u",
-    source: "zilla-moveonjoy",
-  },
 ];
-
 
 
 
