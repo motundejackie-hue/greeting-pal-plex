@@ -267,11 +267,12 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
           {/* Centre controls, on screen */}
           {state === "playing" ? (
             <div
-              className={`absolute inset-0 grid place-items-center transition-opacity duration-200 ${
-                uiVisible ? "opacity-100" : "pointer-events-none opacity-0"
+              className={`pointer-events-none absolute inset-0 z-20 grid place-items-center transition-opacity duration-200 ${
+                uiVisible ? "opacity-100" : "opacity-0"
               }`}
             >
-              <div className="flex items-center gap-4 sm:gap-6">
+              <div className="pointer-events-auto flex items-center gap-4 sm:gap-6">
+
                 <button
                   type="button"
                   aria-label="Back 10 seconds"
