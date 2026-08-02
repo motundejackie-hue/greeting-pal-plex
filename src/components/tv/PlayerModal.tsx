@@ -44,7 +44,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
   const [full, setFull] = useState(false);
   const [uiVisible, setUiVisible] = useState(true);
   const [waited, setWaited] = useState(0);
-  const [progress, setProgress] = useState(0);
+  
   const shell = useRef<HTMLDivElement | null>(null);
   const hideTimer = useRef<number | undefined>(undefined);
 
