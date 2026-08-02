@@ -222,10 +222,11 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
 
           {/* Top bar: identity + close */}
           <div
-            className={`pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-black/80 to-transparent p-3 transition-opacity duration-200 ${
+            className={`pointer-events-none absolute inset-x-0 top-0 z-40 flex items-start justify-between gap-3 bg-gradient-to-b from-black/80 to-transparent p-3 transition-opacity duration-200 ${
               uiVisible ? "opacity-100" : "opacity-0"
             }`}
           >
+
             <div className="pointer-events-auto flex min-w-0 items-center gap-2">
               <button
                 type="button"
