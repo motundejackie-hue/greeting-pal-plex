@@ -87,7 +87,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               Opencast
             </span>
           </Link>
+          <ServerPicker />
         </div>
+
 
         {/* Center: pill tabs */}
         <nav aria-label="Sections" className="no-scrollbar flex min-w-0 items-center gap-1 overflow-x-auto">
