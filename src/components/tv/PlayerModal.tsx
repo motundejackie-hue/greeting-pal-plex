@@ -415,8 +415,15 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
                 </span>
                 <p className="text-xs text-muted-foreground">
                   <span className="font-display font-semibold text-foreground">Opencast</span>{" "}
-                  {recovering ? "is re-syncing the stream…" : "is buffering the stream…"}
+                  {recovering
+                    ? "is re-syncing the stream…"
+                    : waited > 10
+                      ? "is locking on to the signal — hang tight…"
+                      : waited > 5
+                        ? "is finding the best server…"
+                        : "is buffering the stream…"}
                 </p>
+
                 <span className="flex items-end gap-1" aria-hidden="true">
                   {[0, 1, 2, 3, 4].map((i) => (
                     <span
