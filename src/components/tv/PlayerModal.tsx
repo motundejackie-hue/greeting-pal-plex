@@ -375,7 +375,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
               onClick={toggleFullscreen}
               className="tap grid h-9 w-9 place-items-center rounded-full bg-black/55 text-foreground backdrop-blur hover:bg-black/80"
             >
-              {full ? <Shrink className="h-4 w-4" /> : <Expand className="h-4 w-4" />}
+              {full ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </button>
           </div>
 
