@@ -1,97 +1,25 @@
 import { createClient } from "@supabase/supabase-js";
 import { CHANNEL_LOGOS, getPreferredChannelLogo, normalizeChannelKey } from "./channel-logos";
 import type { Channel, CountryInfo, CategoryInfo } from "./channel-types";
+import { DIRECT_STREAMS, PLAYLIST_SERVERS } from "./servers";
 
 export type { Channel, CountryInfo, CategoryInfo };
 
 const API = process.env.IPTV_API_URL ?? "https://iptv-org.github.io/api/";
-const PLAYLISTS: {
-  url: string;
-  source: string;
-  headers?: Record<string, string>;
-  /** Force these categories onto every channel parsed from this playlist. */
-  forceCategories?: string[];
-}[] = [
-  { url: "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8", source: "free-tv" },
-  { url: "https://iptv-org.github.io/iptv/index.m3u", source: "iptv-org-m3u" },
-
-  // ---- Sports playlists (all merged into the Sports section) ----
-  {
-    url: "https://iptv-org.github.io/iptv/categories/sports.m3u",
-    source: "iptv-org-sports",
-    forceCategories: ["sports"],
-  },
-  // topembed (live sports events) — verified GitHub mirror of the bit.ly list
-  {
-    url: "https://raw.githubusercontent.com/hispaniaestable/topembed-m3u/main/all_channels/playlist.m3u8",
-    source: "topembed",
-    headers: { Referer: "https://topembed.pw/", Origin: "https://topembed.pw" },
-    forceCategories: ["sports"],
-  },
-  // TheTVApp — live US sports channels (verified reachable)
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/TheTVApp.m3u8",
-    source: "thetvapp",
-    forceCategories: ["sports"],
-  },
-
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/T-Sports-Playlist-Auto-Update/refs/heads/main/universal_player.m3u",
-    source: "t-sports",
-    forceCategories: ["sports"],
-  },
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/T-Sports-Playlist-Auto-Update/main/playlist.m3u",
-    source: "t-sports-legacy",
-    forceCategories: ["sports"],
-  },
-  {
-    url: "https://raw.githubusercontent.com/twoonethree/IPTV/master/Sports.m3u",
-    source: "twoonethree",
-    forceCategories: ["sports"],
-  },
-  // IPTV-Scraper-Zilla — current outputs
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/combined-playlist.m3u",
-    source: "zilla",
-  },
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/CricHD.m3u",
-    source: "zilla-crichd",
-    forceCategories: ["sports"],
-  },
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/Pixelsports.m3u",
-    source: "zilla-pixelsports",
-    forceCategories: ["sports"],
-  },
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/TVPass.m3u",
-    source: "zilla-tvpass",
-  },
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/LGTV.m3u",
-    source: "zilla-lgtv",
-  },
-  {
-    url: "https://raw.githubusercontent.com/abusaeeidx/IPTV-Scraper-Zilla/main/Moveonjoy.m3u",
-    source: "zilla-moveonjoy",
-  },
-];
-
-
-
 
 const TTL = 24 * 60 * 60 * 1000;
 
+export type AltLink = { url: string; source: string };
+
 type Catalog = {
   /** Extra stream URLs per channel slug, used as fallbacks when the main link fails. */
-  alternates: Record<string, string[]>;
+  alternates: Record<string, AltLink[]>;
   channels: Channel[];
   countries: CountryInfo[];
   categories: CategoryInfo[];
   builtAt: number;
 };
+
 
 let cache: Catalog | null = null;
 let building: Promise<Catalog> | null = null;
