@@ -380,7 +380,12 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
           </div>
 
           {state === "loading" ? (
-            <div className="absolute inset-0 grid place-items-center overflow-hidden bg-black">
+            <div
+              className={`absolute inset-0 z-10 grid place-items-center overflow-hidden transition-colors duration-1000 ${
+                waited > 10 ? "bg-[#1a0a0c]" : waited > 5 ? "bg-[#0d0f14]" : "bg-black"
+              }`}
+            >
+
               <div className="absolute inset-0 opacity-20">
                 <ChannelLogo
                   channel={channel}
