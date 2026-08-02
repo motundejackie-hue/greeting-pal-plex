@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
-  Expand,
   Heart,
+  Maximize2,
+  Minimize2,
   Pause,
   Play,
   RefreshCw,
   RotateCcw,
   RotateCw,
-  Shrink,
   SkipForward,
   Volume1,
   Volume2,
@@ -22,6 +22,8 @@ import { ChannelLogo } from "@/components/tv/ChannelLogo";
 import { getStreamSources } from "@/lib/iptv.functions";
 import { useHlsStream } from "@/hooks/use-hls";
 import { fetchStoredStream, storeWorkingStream } from "@/lib/stream-links";
+import { serverLabel } from "@/lib/servers";
+import { getServerPref, setServerPref, subscribeServerPref } from "@/lib/server-pref";
 
 type Props = {
   channel: Channel;
@@ -41,8 +43,12 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
   const [introDone, setIntroDone] = useState(false);
   const [full, setFull] = useState(false);
   const [uiVisible, setUiVisible] = useState(true);
+  const [waited, setWaited] = useState(0);
+  const [progress, setProgress] = useState(0);
   const shell = useRef<HTMLDivElement | null>(null);
   const hideTimer = useRef<number | undefined>(undefined);
+
+  const serverPref = useSyncExternalStore(subscribeServerPref, getServerPref, () => "auto");
 
   const sources = useQuery({
     queryKey: ["stream-sources", channel.slug],
@@ -56,23 +62,35 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
     staleTime: 10 * 60 * 1000,
   });
 
+  // Links ordered so the chosen server is tried first.
+  const ordered = useMemo(() => {
+    const links = sources.data?.links ?? [{ url: channel.streamUrl, source: channel.source }];
+    if (serverPref === "auto") return links;
+    return [
+      ...links.filter((l) => l.source === serverPref),
+      ...links.filter((l) => l.source !== serverPref),
+    ];
+  }, [sources.data, serverPref, channel.streamUrl, channel.source]);
+
   const onWorking = useCallback(
     (link: { url: string; mode: string }) => {
       void storeWorkingStream(channel.slug, channel.name, link);
+      const hit = (sources.data?.links ?? []).find((l) => l.url === link.url);
+      // The server that delivered becomes the app default.
+      if (hit?.source) setServerPref(hit.source);
     },
-    [channel.slug, channel.name],
+    [channel.slug, channel.name, sources.data],
   );
 
-  const { videoRef, state, levels, level, setLevel, recovering, retry, skip } = useHlsStream(
-    stored.isLoading ? null : channel.streamUrl,
-    {
+  const { videoRef, state, levels, level, setLevel, recovering, retry, skip, attemptLabel } =
+    useHlsStream(stored.isLoading || sources.isLoading ? null : (ordered[0]?.url ?? null), {
       muted,
       cacheKey: channel.slug,
-      fallbacks: sources.data?.urls ?? [],
+      fallbacks: ordered.slice(1).map((l) => l.url),
       preferred: stored.data ?? null,
       onWorking,
-    },
-  );
+    });
+
 
   const toggleFullscreen = () => {
     const el = shell.current;
