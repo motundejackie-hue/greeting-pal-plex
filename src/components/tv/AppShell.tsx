@@ -20,7 +20,9 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { ServerPicker } from "@/components/tv/ServerPicker";
 import appIcon from "/app-icon.png?url";
+
 
 const NAV = [
   { icon: Home, label: "Home", to: "/", search: undefined as Record<string, string> | undefined },
