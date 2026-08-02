@@ -250,6 +250,8 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-foreground">{channel.name}</p>
                 <p className="truncate text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                  {serverPref === "auto" ? "" : `${serverLabel(serverPref)} · `}
+
                   {channel.categories[0] ?? "live"}
                 </p>
               </div>
