@@ -201,6 +201,17 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
     return () => window.clearInterval(id);
   }, [state, introDone, videoRef]);
 
+  // Drives the buffering copy + colour shift while we hunt for a live link.
+  useEffect(() => {
+    if (state !== "loading") {
+      setWaited(0);
+      return;
+    }
+    const id = window.setInterval(() => setWaited((w) => w + 1), 1000);
+    return () => window.clearInterval(id);
+  }, [state, attemptLabel]);
+
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/90 p-0 backdrop-blur-sm sm:items-center sm:p-4">
       <div
