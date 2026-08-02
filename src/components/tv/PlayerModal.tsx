@@ -306,10 +306,11 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
 
           {/* Bottom overlay strip: volume, quality, next feed, fullscreen */}
           <div
-            className={`absolute inset-x-0 bottom-0 flex flex-wrap items-center gap-2 bg-gradient-to-t from-black/85 to-transparent px-3 pb-3 pt-8 transition-opacity duration-200 ${
-              uiVisible ? "opacity-100" : "pointer-events-none opacity-0"
+            className={`absolute inset-x-0 bottom-0 z-30 flex flex-wrap items-center gap-2 bg-gradient-to-t from-black/85 to-transparent px-3 pb-3 pt-8 transition-opacity duration-200 ${
+              uiVisible && state === "playing" ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
           >
+
             <span className="live-dot rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-foreground backdrop-blur">
               Live
             </span>
