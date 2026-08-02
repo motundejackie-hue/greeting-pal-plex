@@ -58,7 +58,7 @@ export const getChannelsBySlugs = createServerFn({ method: "GET" })
     return { items: found };
   });
 
-/** Alternate stream links for a channel, used when the primary link fails. */
+/** Alternate stream links for a channel, tagged with the server they came from. */
 export const getStreamSources = createServerFn({ method: "GET" })
   .inputValidator((data: { slug?: string } | undefined) => ({
     slug: String(data?.slug ?? "").slice(0, 120),
@@ -68,8 +68,12 @@ export const getStreamSources = createServerFn({ method: "GET" })
     const catalog = await getCatalog();
     const channel = catalog.channels.find((c) => c.slug === data.slug);
     const alts = catalog.alternates[data.slug] ?? [];
-    const urls = [channel?.streamUrl, ...alts].filter(
-      (u): u is string => typeof u === "string" && u.startsWith("http"),
-    );
-    return { urls: [...new Set(urls)].slice(0, 16) };
+    const all = [
+      ...(channel ? [{ url: channel.streamUrl, source: channel.source }] : []),
+      ...alts,
+    ].filter((l) => typeof l.url === "string" && l.url.startsWith("http"));
+    const seen = new Set<string>();
+    const links = all.filter((l) => (seen.has(l.url) ? false : (seen.add(l.url), true))).slice(0, 20);
+    return { links, urls: links.map((l) => l.url) };
   });
+
