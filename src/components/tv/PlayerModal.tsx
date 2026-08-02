@@ -430,8 +430,17 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
             </div>
           ) : null}
 
+          {state === "playing" && !introDone && !intro ? (
+            <div className="pointer-events-none absolute inset-x-0 bottom-16 z-10 grid place-items-center">
+              <span className="rounded-full bg-black/70 px-3 py-1.5 text-[11px] font-medium text-foreground backdrop-blur">
+                Preparing your stream…
+              </span>
+            </div>
+          ) : null}
+
           {state === "playing" && intro ? (
-            <div className="pointer-events-none absolute inset-0 grid place-items-center bg-black/60 intro-fade">
+            <div className="pointer-events-none absolute inset-0 z-20 grid place-items-center bg-black/60 intro-fade">
+
               <div className="grid place-items-center gap-3">
                 <span className="grid h-28 w-28 place-items-center overflow-hidden rounded-2xl bg-black/40 intro-pop">
                   <ChannelLogo
