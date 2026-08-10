@@ -58,7 +58,7 @@ export function ChannelRow({ title, subtitle, items, onOpen, onFavorite, favorit
       </div>
       <div
         ref={scroller}
-        className="no-scrollbar flex snap-x gap-4 overflow-x-auto scroll-pl-5 scroll-smooth px-5 pb-2 md:gap-5 md:scroll-pl-12 md:px-12"
+        className="no-scrollbar flex gap-4 overflow-x-auto scroll-smooth px-5 pb-2 md:gap-5 md:scroll-pl-12 md:px-12"
       >
         {items.slice(0, 24).map((c) => (
           <div
