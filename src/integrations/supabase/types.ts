@@ -104,6 +104,27 @@ export type Database = {
         }
         Relationships: []
       }
+      tv_hidden: {
+        Row: {
+          channel_slug: string
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          channel_slug: string
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          channel_slug?: string
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
       tv_logos: {
         Row: {
           channel_slug: string

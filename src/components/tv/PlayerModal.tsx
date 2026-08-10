@@ -10,7 +10,9 @@ import {
   RefreshCw,
   RotateCcw,
   RotateCw,
+  Radio,
   SkipForward,
+
   Volume1,
   Volume2,
   VolumeX,
@@ -22,7 +24,7 @@ import { ChannelLogo } from "@/components/tv/ChannelLogo";
 import { getStreamSources } from "@/lib/iptv.functions";
 import { useHlsStream } from "@/hooks/use-hls";
 import { fetchStoredStream, storeWorkingStream } from "@/lib/stream-links";
-import { serverLabel } from "@/lib/servers";
+import { SERVERS, serverLabel } from "@/lib/servers";
 import { getServerPref, setServerPref, subscribeServerPref } from "@/lib/server-pref";
 
 type Props = {
@@ -257,6 +259,22 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
               </div>
             </div>
             <div className="pointer-events-auto flex shrink-0 items-center gap-1.5">
+              <label className="hidden items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 text-[11px] text-muted-foreground backdrop-blur sm:flex">
+                <Radio className="h-3.5 w-3.5 text-primary" />
+                <select
+                  aria-label="Stream server"
+                  value={serverPref}
+                  onChange={(e) => setServerPref(e.target.value)}
+                  className="max-w-[9rem] truncate bg-transparent text-[11px] font-medium text-foreground outline-none"
+                >
+                  {SERVERS.map((s, i) => (
+                    <option key={s.id} value={s.id} className="bg-popover text-foreground">
+                      {i === 0 ? s.label : `${i}. ${s.label}`}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
               {onFavorite ? (
                 <button
                   type="button"

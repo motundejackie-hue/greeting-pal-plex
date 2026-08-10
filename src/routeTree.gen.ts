@@ -10,12 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TutorialsRouteImport } from './routes/tutorials'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as RokuRouteImport } from './routes/roku'
 import { Route as LogosRouteImport } from './routes/logos'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiStreamProxyRouteImport } from './routes/api/stream-proxy'
 
@@ -24,14 +25,14 @@ const TutorialsRoute = TutorialsRouteImport.update({
   path: '/tutorials',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RokuRoute = RokuRouteImport.update({
+  id: '/roku',
+  path: '/roku',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LogosRoute = LogosRouteImport.update({
@@ -54,6 +55,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -67,35 +73,38 @@ const ApiStreamProxyRoute = ApiStreamProxyRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/favorites': typeof FavoritesRoute
   '/logos': typeof LogosRoute
+  '/roku': typeof RokuRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/favorites': typeof FavoritesRoute
   '/logos': typeof LogosRoute
+  '/roku': typeof RokuRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/favorites': typeof FavoritesRoute
   '/logos': typeof LogosRoute
+  '/roku': typeof RokuRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
 }
@@ -103,46 +112,50 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/auth'
     | '/browse'
     | '/favorites'
     | '/logos'
+    | '/roku'
     | '/settings'
-    | '/test'
     | '/tutorials'
     | '/api/stream-proxy'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/auth'
     | '/browse'
     | '/favorites'
     | '/logos'
+    | '/roku'
     | '/settings'
-    | '/test'
     | '/tutorials'
     | '/api/stream-proxy'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/auth'
     | '/browse'
     | '/favorites'
     | '/logos'
+    | '/roku'
     | '/settings'
-    | '/test'
     | '/tutorials'
     | '/api/stream-proxy'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
   FavoritesRoute: typeof FavoritesRoute
   LogosRoute: typeof LogosRoute
+  RokuRoute: typeof RokuRoute
   SettingsRoute: typeof SettingsRoute
-  TestRoute: typeof TestRoute
   TutorialsRoute: typeof TutorialsRoute
   ApiStreamProxyRoute: typeof ApiStreamProxyRoute
 }
@@ -156,18 +169,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TutorialsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/settings': {
       id: '/settings'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roku': {
+      id: '/roku'
+      path: '/roku'
+      fullPath: '/roku'
+      preLoaderRoute: typeof RokuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/logos': {
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -217,12 +237,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
   FavoritesRoute: FavoritesRoute,
   LogosRoute: LogosRoute,
+  RokuRoute: RokuRoute,
   SettingsRoute: SettingsRoute,
-  TestRoute: TestRoute,
   TutorialsRoute: TutorialsRoute,
   ApiStreamProxyRoute: ApiStreamProxyRoute,
 }

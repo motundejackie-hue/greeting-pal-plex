@@ -58,12 +58,13 @@ export function ChannelRow({ title, subtitle, items, onOpen, onFavorite, favorit
       </div>
       <div
         ref={scroller}
-        className="no-scrollbar flex snap-x gap-4 overflow-x-auto scroll-smooth px-5 pb-2 md:gap-5 md:px-12"
+        className="no-scrollbar flex gap-4 overflow-x-auto scroll-smooth pb-2 md:gap-5"
       >
+        <div aria-hidden="true" className="w-5 shrink-0 md:w-12" />
         {items.slice(0, 24).map((c) => (
           <div
             key={`${c.slug}-${c.streamUrl}`}
-            className="w-[210px] shrink-0 snap-start sm:w-[250px] md:w-[290px]"
+            className="w-[210px] shrink-0 sm:w-[250px] md:w-[290px]"
           >
             <ChannelCard
               channel={c}
@@ -74,6 +75,7 @@ export function ChannelRow({ title, subtitle, items, onOpen, onFavorite, favorit
             />
           </div>
         ))}
+        <div aria-hidden="true" className="w-5 shrink-0 md:w-12" />
       </div>
     </section>
   );

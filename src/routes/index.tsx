@@ -13,6 +13,8 @@ import { PlayerModal } from "@/components/tv/PlayerModal";
 import { SplashScreen } from "@/components/SplashScreen";
 import { useAuth } from "@/hooks/use-auth";
 import { useFavorites, useRecent } from "@/lib/favorites";
+import { useHiddenChannels } from "@/lib/hidden-channels";
+
 
 const homeQuery = queryOptions({
   queryKey: ["home"],
@@ -65,9 +67,12 @@ function HomePage() {
     [push],
   );
 
-  const withLogo = (items: Channel[]) => items.filter((c) => Boolean(c.logo));
+  const hidden = useHiddenChannels();
+  const visible = (items: Channel[]) => items.filter((c) => !hidden.includes(c.slug));
+  const withLogo = (items: Channel[]) => visible(items).filter((c) => Boolean(c.logo));
   const all = data.rows.flatMap((r) => r.items as Channel[]);
   const hero = data.hero;
+
 
   return (
     <>
@@ -119,7 +124,7 @@ function HomePage() {
           <ChannelRow
             key={row.id}
             title={row.title}
-            items={row.items as Channel[]}
+            items={visible(row.items as Channel[])}
             onOpen={open}
             onFavorite={(c) => toggle(c.slug)}
             favorites={slugs}

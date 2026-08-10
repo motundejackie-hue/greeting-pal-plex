@@ -4,25 +4,26 @@ import {
   Baby,
   Clapperboard,
   Film,
-  FlaskConical,
   Gamepad2,
   GraduationCap,
   Heart,
   Home,
+  Image as ImageIcon,
   LogIn,
   Menu,
   Newspaper,
+  Radio,
   Search,
   Settings,
+  ShieldCheck,
   Trophy,
+  Tv,
   User,
   Users,
   X,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { ServerPicker } from "@/components/tv/ServerPicker";
 import appIcon from "/app-icon.png?url";
-
 
 const NAV = [
   { icon: Home, label: "Home", to: "/", search: undefined as Record<string, string> | undefined },
@@ -34,19 +35,22 @@ const NAV = [
   { icon: Clapperboard, label: "Shows", to: "/browse", search: { category: "series" } },
   { icon: Users, label: "Family", to: "/browse", search: { category: "family" } },
   { icon: Film, label: "Movies", to: "/browse", search: { category: "movies" } },
-  { icon: Search, label: "Documentary", to: "/browse", search: { category: "documentary" } },
+  { icon: Radio, label: "Watch on Roku TV", to: "/roku", search: undefined },
+  { icon: ImageIcon, label: "Logo manager", to: "/logos", search: undefined },
   { icon: GraduationCap, label: "Tutorials", to: "/tutorials", search: undefined },
-  { icon: FlaskConical, label: "Test", to: "/test", search: undefined },
+  { icon: ShieldCheck, label: "Admin", to: "/admin", search: undefined },
   { icon: Settings, label: "Settings", to: "/settings", search: undefined },
 ];
 
-/** Google-TV style pill tabs. */
+/** Frosted-glass pill tabs, matching the cinematic reference layout. */
 const TABS = [
-  { label: "For you", to: "/", search: undefined as Record<string, string> | undefined },
-  { label: "Movies", to: "/browse", search: { category: "movies" } },
-  { label: "Shows", to: "/browse", search: { category: "series" } },
-  { label: "Apps", to: "/browse", search: { category: "general" } },
-  { label: "Library", to: "/favorites", search: undefined },
+  { icon: Home, label: "Home", to: "/", search: undefined as Record<string, string> | undefined },
+  { icon: Tv, label: "Live TV", to: "/browse", search: { category: "general" } },
+  { icon: Film, label: "Movies", to: "/browse", search: { category: "movies" } },
+  { icon: Clapperboard, label: "Shows", to: "/browse", search: { category: "series" } },
+  { icon: Baby, label: "Kids", to: "/browse", search: { category: "kids" } },
+  { icon: Heart, label: "Library", to: "/favorites", search: undefined },
+  { icon: Settings, label: "Settings", to: "/settings", search: undefined },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -71,53 +75,65 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top bar */}
-      <header className="sticky top-0 z-40 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 bg-background/90 px-3 py-2.5 backdrop-blur md:px-6">
-        {/* Left: hamburger + logo */}
+      <header className="sticky top-0 z-40 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 bg-background/70 px-3 py-2.5 backdrop-blur-xl md:px-8">
+        {/* Left: menu + brand */}
         <div className="flex min-w-0 items-center gap-2">
           <button
             type="button"
             aria-label="Open menu"
             onClick={() => setOpen(true)}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-secondary text-foreground transition hover:bg-muted"
+            className="tap grid h-9 w-9 shrink-0 place-items-center rounded-full bg-secondary/70 text-foreground ring-1 ring-border/60 transition hover:bg-secondary"
           >
             <Menu className="h-4 w-4" />
           </button>
           <Link to="/" className="flex min-w-0 items-center gap-2">
-            <img src={appIcon} alt="Opencast" className="h-8 w-8 shrink-0 rounded-full" />
-            <span className="hidden font-display text-base font-bold text-foreground sm:inline">
+            <img src={appIcon} alt="Opencast" className="h-8 w-8 shrink-0 rounded-xl" />
+            <span className="hidden font-display text-base font-bold tracking-tight text-foreground sm:inline">
               Opencast
             </span>
           </Link>
-          <ServerPicker />
+          <Link
+            to="/roku"
+            className="tap ml-1 hidden shrink-0 items-center gap-1.5 rounded-full bg-secondary/70 px-3 py-1.5 text-[11px] font-semibold text-foreground ring-1 ring-border/60 transition hover:bg-secondary sm:flex"
+          >
+            <Radio className="h-3.5 w-3.5 text-primary" />
+            <span className="hidden md:inline">Watch on Roku TV</span>
+            <span className="md:hidden">Roku</span>
+          </Link>
         </div>
 
-
-        {/* Center: pill tabs */}
-        <nav aria-label="Sections" className="no-scrollbar flex min-w-0 items-center gap-1 overflow-x-auto">
-          {TABS.map((tab) => (
-            <Link
-              key={tab.label}
-              to={tab.to}
-              search={tab.search as never}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-medium transition md:text-sm ${
-                tabActive(tab)
-                  ? "bg-secondary text-foreground"
-                  : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
-              }`}
-            >
-              {tab.label}
-            </Link>
-          ))}
+        {/* Center: frosted pill tabs */}
+        <nav
+          aria-label="Sections"
+          className="no-scrollbar flex min-w-0 items-center justify-center gap-1.5 overflow-x-auto"
+        >
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <Link
+                key={tab.label}
+                to={tab.to}
+                search={tab.search as never}
+                className={`tap flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur transition md:text-[13px] ${
+                  tabActive(tab)
+                    ? "bg-foreground/95 text-background shadow-tv"
+                    : "bg-secondary/45 text-muted-foreground ring-1 ring-border/50 hover:bg-secondary/80 hover:text-foreground"
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{tab.label}</span>
+              </Link>
+            );
+          })}
         </nav>
 
-        {/* Right: search, settings, compact sign-in */}
+        {/* Right: search, settings, compact account */}
         <div className="flex shrink-0 items-center gap-1.5">
           <button
             type="button"
             aria-label="Search channels"
             onClick={() => setSearchOpen((v) => !v)}
-            className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+            className="tap grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
           >
             <Search className="h-4 w-4" />
           </button>
@@ -132,7 +148,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             to="/auth"
             aria-label={user ? "Account" : "Sign in"}
             title={user ? "Account" : "Sign in"}
-            className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground shadow-ember transition hover:brightness-110"
+            className="tap grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground shadow-ember transition hover:brightness-110"
           >
             {user ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
           </Link>
@@ -140,7 +156,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
 
       {searchOpen ? (
-        <form onSubmit={submit} className="px-3 pb-2 md:px-6">
+        <form onSubmit={submit} className="px-3 pb-2 md:px-8">
           <label className="flex min-w-0 items-center gap-2 rounded-full bg-secondary px-4 py-2">
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
             <input
@@ -167,7 +183,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="absolute inset-y-0 left-0 flex w-64 flex-col gap-1 overflow-y-auto bg-card p-3">
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <img src={appIcon} alt="" className="h-8 w-8 rounded-full" />
+                <img src={appIcon} alt="" className="h-8 w-8 rounded-xl" />
                 <span className="font-display text-lg font-bold text-foreground">Opencast</span>
               </div>
               <button

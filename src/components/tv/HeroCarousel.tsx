@@ -82,7 +82,7 @@ export function HeroCarousel({ featured, onPlay, totalChannels }: Props) {
 
   return (
     <section className="mb-10">
-      <div className="relative h-[300px] w-full overflow-hidden md:h-[500px]">
+      <div className="relative h-[230px] w-full overflow-hidden md:h-[380px]">
         {CATEGORIES.map((s, i) => (
           <img
             key={s.id}
