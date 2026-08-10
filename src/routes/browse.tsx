@@ -9,6 +9,8 @@ import { ChannelCard } from "@/components/tv/ChannelCard";
 import { PlayerModal } from "@/components/tv/PlayerModal";
 import { useAuth } from "@/hooks/use-auth";
 import { useFavorites, useRecent } from "@/lib/favorites";
+import { useHiddenChannels } from "@/lib/hidden-channels";
+
 
 type Search = { q?: string; country?: string; category?: string };
 
@@ -73,8 +75,9 @@ function BrowsePage() {
   const apply = (patch: Partial<Search>) =>
     void navigate({ search: (prev: Search) => ({ ...prev, ...patch }) });
 
-  const visible = items;
+  const visible = items.filter((c) => !hidden.includes(c.slug));
   const total = result.data?.total ?? 0;
+
 
   return (
     <>

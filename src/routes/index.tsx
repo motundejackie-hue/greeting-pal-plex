@@ -124,7 +124,7 @@ function HomePage() {
           <ChannelRow
             key={row.id}
             title={row.title}
-            items={row.items as Channel[]}
+            items={visible(row.items as Channel[])}
             onOpen={open}
             onFavorite={(c) => toggle(c.slug)}
             favorites={slugs}
