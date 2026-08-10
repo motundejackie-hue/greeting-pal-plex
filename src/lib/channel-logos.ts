@@ -96,7 +96,96 @@ export const CHANNEL_LOGOS: Record<string, string> = {
   cbc: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/CBC_Logo_2021.svg/512px-CBC_Logo_2021.svg.png",
   rtve: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/RTVE_logo.svg/512px-RTVE_logo.svg.png",
   abc: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/ABC_News_logo_2021.svg/512px-ABC_News_logo_2021.svg.png",
+
+  // Sports (extended)
+  skysportsmainevent:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Sky_Sports_News.svg/512px-Sky_Sports_News.svg.png",
+  skysportsfootball:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Sky_Sports_News.svg/512px-Sky_Sports_News.svg.png",
+  beinsports:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/BeIN_Sports_logo.svg/512px-BeIN_Sports_logo.svg.png",
+  beinsports1:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/BeIN_Sports_logo.svg/512px-BeIN_Sports_logo.svg.png",
+  supersport:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/SuperSport_logo.svg/512px-SuperSport_logo.svg.png",
+  tntsports:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/TNT_Sports_logo_2023.svg/512px-TNT_Sports_logo_2023.svg.png",
+  foxsports:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/2015_Fox_Sports_logo.svg/512px-2015_Fox_Sports_logo.svg.png",
+  foxsports1:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/2015_Fox_Sports_logo.svg/512px-2015_Fox_Sports_logo.svg.png",
+  nbcsports:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/NBC_Sports_2022.svg/512px-NBC_Sports_2022.svg.png",
+  cbssportsnetwork:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/CBS_Sports_Network_logo.svg/512px-CBS_Sports_Network_logo.svg.png",
+  nflnetwork:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/NFL_Network_logo.svg/512px-NFL_Network_logo.svg.png",
+  nbatv:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/NBA_TV.svg/512px-NBA_TV.svg.png",
+  tsn: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/TSN-Logo.svg/512px-TSN-Logo.svg.png",
+  sportsnet:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Sportsnet_logo.svg/512px-Sportsnet_logo.svg.png",
+  starsports1:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Star_Sports_logo.svg/512px-Star_Sports_logo.svg.png",
+  willowtv:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Willow_TV_logo.svg/512px-Willow_TV_logo.svg.png",
+  motorsporttv:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Motorsport.tv_logo.svg/512px-Motorsport.tv_logo.svg.png",
+
+  // Entertainment, movies and kids (extended)
+  hbo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/HBO_logo.svg/512px-HBO_logo.svg.png",
+  amc: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/AMC_logo_2019.svg/512px-AMC_logo_2019.svg.png",
+  tnt: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/TNT_Logo_2016.svg/512px-TNT_Logo_2016.svg.png",
+  syfy:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Syfy.svg/512px-Syfy.svg.png",
+  comedycentral:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Comedy_Central_2018.svg/512px-Comedy_Central_2018.svg.png",
+  eentertainment:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/E%21_Logo_2012.svg/512px-E%21_Logo_2012.svg.png",
+  fx: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/FX_International_logo.svg/512px-FX_International_logo.svg.png",
+  paramountnetwork:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Paramount_Network.svg/512px-Paramount_Network.svg.png",
+  animalplanet:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/2018_Animal_Planet_logo.svg/512px-2018_Animal_Planet_logo.svg.png",
+  travelchannel:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Travel_Channel_-_new_logo.svg/512px-Travel_Channel_-_new_logo.svg.png",
+  foodnetwork:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Food_Network_logo.svg/512px-Food_Network_logo.svg.png",
+  hgtv:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/HGTV_US_Logo_2015.svg/512px-HGTV_US_Logo_2015.svg.png",
+  tlc: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/TLC_Logo.svg/512px-TLC_Logo.svg.png",
+  cartoonito:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Cartoonito_2021.svg/512px-Cartoonito_2021.svg.png",
+  boomerang:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Boomerang_2014_logo.svg/512px-Boomerang_2014_logo.svg.png",
+  babytv:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/BabyTV_logo.svg/512px-BabyTV_logo.svg.png",
+  pbskids:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/PBS_Kids_Logo.svg/512px-PBS_Kids_Logo.svg.png",
+  disneyjunior:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Disney_Junior_2011.svg/512px-Disney_Junior_2011.svg.png",
+  nickjr:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Nick_Jr._logo_2009.svg/512px-Nick_Jr._logo_2009.svg.png",
+  itv: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/ITV_logo_2019.svg/512px-ITV_logo_2019.svg.png",
+  channel4:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Channel_4_logo_2015.svg/512px-Channel_4_logo_2015.svg.png",
+  channel5:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Channel_5_%28UK%29_logo_2016.svg/512px-Channel_5_%28UK%29_logo_2016.svg.png",
+  tv5monde:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/TV5MONDE_logo.svg/512px-TV5MONDE_logo.svg.png",
+  arte:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Arte_Logo_2011.svg/512px-Arte_Logo_2011.svg.png",
+  cgtn:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/CGTN.svg/512px-CGTN.svg.png",
+  i24news:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/I24news_logo.svg/512px-I24news_logo.svg.png",
+  cbsn: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/CBS_News_logo_2020.svg/512px-CBS_News_logo_2020.svg.png",
+  tubi:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Tubi_logo.svg/512px-Tubi_logo.svg.png",
+  samsungtvplus:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Samsung_TV_Plus_logo.svg/512px-Samsung_TV_Plus_logo.svg.png",
 };
+
 
 export function normalizeChannelKey(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "");
