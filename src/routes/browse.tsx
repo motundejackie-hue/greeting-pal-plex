@@ -45,6 +45,8 @@ function BrowsePage() {
   const navigate = Route.useNavigate();
   const { user } = useAuth();
   const { slugs, toggle } = useFavorites(user?.id ?? null);
+  const hidden = useHiddenChannels();
+
   const { push } = useRecent();
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<Channel[]>([]);
