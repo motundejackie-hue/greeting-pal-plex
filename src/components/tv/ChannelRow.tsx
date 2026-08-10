@@ -63,7 +63,7 @@ export function ChannelRow({ title, subtitle, items, onOpen, onFavorite, favorit
         {items.slice(0, 24).map((c) => (
           <div
             key={`${c.slug}-${c.streamUrl}`}
-            className="w-[210px] shrink-0 snap-start sm:w-[250px] md:w-[290px]"
+            className="w-[210px] shrink-0 sm:w-[250px] md:w-[290px]"
           >
             <ChannelCard
               channel={c}
