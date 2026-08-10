@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TutorialsRouteImport } from './routes/tutorials'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as RokuRouteImport } from './routes/roku'
 import { Route as LogosRouteImport } from './routes/logos'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as BrowseRouteImport } from './routes/browse'
@@ -26,6 +27,11 @@ const TutorialsRoute = TutorialsRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RokuRoute = RokuRouteImport.update({
+  id: '/roku',
+  path: '/roku',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LogosRoute = LogosRouteImport.update({
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/browse': typeof BrowseRoute
   '/favorites': typeof FavoritesRoute
   '/logos': typeof LogosRoute
+  '/roku': typeof RokuRoute
   '/settings': typeof SettingsRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/browse': typeof BrowseRoute
   '/favorites': typeof FavoritesRoute
   '/logos': typeof LogosRoute
+  '/roku': typeof RokuRoute
   '/settings': typeof SettingsRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/browse': typeof BrowseRoute
   '/favorites': typeof FavoritesRoute
   '/logos': typeof LogosRoute
+  '/roku': typeof RokuRoute
   '/settings': typeof SettingsRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/favorites'
     | '/logos'
+    | '/roku'
     | '/settings'
     | '/tutorials'
     | '/api/stream-proxy'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/favorites'
     | '/logos'
+    | '/roku'
     | '/settings'
     | '/tutorials'
     | '/api/stream-proxy'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/favorites'
     | '/logos'
+    | '/roku'
     | '/settings'
     | '/tutorials'
     | '/api/stream-proxy'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   BrowseRoute: typeof BrowseRoute
   FavoritesRoute: typeof FavoritesRoute
   LogosRoute: typeof LogosRoute
+  RokuRoute: typeof RokuRoute
   SettingsRoute: typeof SettingsRoute
   TutorialsRoute: typeof TutorialsRoute
   ApiStreamProxyRoute: typeof ApiStreamProxyRoute
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roku': {
+      id: '/roku'
+      path: '/roku'
+      fullPath: '/roku'
+      preLoaderRoute: typeof RokuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/logos': {
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrowseRoute: BrowseRoute,
   FavoritesRoute: FavoritesRoute,
   LogosRoute: LogosRoute,
+  RokuRoute: RokuRoute,
   SettingsRoute: SettingsRoute,
   TutorialsRoute: TutorialsRoute,
   ApiStreamProxyRoute: ApiStreamProxyRoute,
