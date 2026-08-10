@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TutorialsRouteImport } from './routes/tutorials'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LogosRouteImport } from './routes/logos'
 import { Route as FavoritesRouteImport } from './routes/favorites'
@@ -22,11 +21,6 @@ import { Route as ApiStreamProxyRouteImport } from './routes/api/stream-proxy'
 const TutorialsRoute = TutorialsRouteImport.update({
   id: '/tutorials',
   path: '/tutorials',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -72,7 +66,6 @@ export interface FileRoutesByFullPath {
   '/favorites': typeof FavoritesRoute
   '/logos': typeof LogosRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
 }
@@ -83,7 +76,6 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesRoute
   '/logos': typeof LogosRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
 }
@@ -95,7 +87,6 @@ export interface FileRoutesById {
   '/favorites': typeof FavoritesRoute
   '/logos': typeof LogosRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
 }
@@ -108,7 +99,6 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/logos'
     | '/settings'
-    | '/test'
     | '/tutorials'
     | '/api/stream-proxy'
   fileRoutesByTo: FileRoutesByTo
@@ -119,7 +109,6 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/logos'
     | '/settings'
-    | '/test'
     | '/tutorials'
     | '/api/stream-proxy'
   id:
@@ -130,7 +119,6 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/logos'
     | '/settings'
-    | '/test'
     | '/tutorials'
     | '/api/stream-proxy'
   fileRoutesById: FileRoutesById
@@ -142,7 +130,6 @@ export interface RootRouteChildren {
   FavoritesRoute: typeof FavoritesRoute
   LogosRoute: typeof LogosRoute
   SettingsRoute: typeof SettingsRoute
-  TestRoute: typeof TestRoute
   TutorialsRoute: typeof TutorialsRoute
   ApiStreamProxyRoute: typeof ApiStreamProxyRoute
 }
@@ -154,13 +141,6 @@ declare module '@tanstack/react-router' {
       path: '/tutorials'
       fullPath: '/tutorials'
       preLoaderRoute: typeof TutorialsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -222,7 +202,6 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritesRoute: FavoritesRoute,
   LogosRoute: LogosRoute,
   SettingsRoute: SettingsRoute,
-  TestRoute: TestRoute,
   TutorialsRoute: TutorialsRoute,
   ApiStreamProxyRoute: ApiStreamProxyRoute,
 }
