@@ -1,14 +1,25 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Search, ShieldCheck, Trash2, Play, ImagePlus, RotateCcw } from "lucide-react";
+import {
+  Check,
+  ImagePlus,
+  Loader2,
+  Play,
+  Plus,
+  RotateCcw,
+  Search,
+  ShieldCheck,
+  Trash2,
+} from "lucide-react";
 import { AppShell } from "@/components/tv/AppShell";
 import { PlayerModal } from "@/components/tv/PlayerModal";
 import { searchChannels } from "@/lib/iptv.functions";
 import type { Channel } from "@/lib/channel-types";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { hideChannel, restoreChannel, useHiddenChannels } from "@/lib/hidden-channels";
+import { addChannel, deleteChannelForever } from "@/lib/tv-store";
+import { useCuratedChannels, useRefreshCurated } from "@/lib/curated";
 import { setLogoOverride } from "@/lib/logo-overrides";
 
 const ADMIN_EMAIL = "erokmary@gmail.com";
@@ -21,10 +32,10 @@ export const Route = createFileRoute("/admin")({
       {
         name: "description",
         content:
-          "Opencast admin console: search channels, test playback, update artwork and remove dead stations.",
+          "Opencast admin console: search the catalogue, publish channels to every user, test playback and update artwork.",
       },
       { property: "og:title", content: "Admin Console — Opencast" },
-      { property: "og:description", content: "Manage Opencast channels, artwork and playback." },
+      { property: "og:description", content: "Publish and manage the Opencast channel lineup." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -72,7 +83,7 @@ function AdminSignIn({ signedIn }: { signedIn: boolean }) {
   return (
     <div className="mx-auto max-w-sm px-5 py-16">
       <div className="mb-5 flex items-center gap-2">
-        <ShieldCheck className="h-5 w-5 text-primary" />
+        <ShieldCheck className="h-5 w-5 text-gold" />
         <h1 className="font-display text-xl font-bold text-foreground">Admin console</h1>
       </div>
       <p className="mb-4 text-xs text-muted-foreground">
@@ -117,15 +128,53 @@ function Console() {
   const [logoFor, setLogoFor] = useState<Channel | null>(null);
   const [logoUrl, setLogoUrl] = useState("");
   const [note, setNote] = useState<string | null>(null);
-  const hidden = useHiddenChannels();
+  const [busySlug, setBusySlug] = useState<string | null>(null);
+
+  const { data: curated = [] } = useCuratedChannels();
+  const refresh = useRefreshCurated();
+  const publishedSlugs = useMemo(() => new Set(curated.map((c) => c.slug)), [curated]);
 
   const results = useQuery({
     queryKey: ["admin-search", q],
     queryFn: () => searchChannels({ data: { q: q || undefined, page: 1 } }),
+    enabled: q.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
   const items = useMemo(() => results.data?.items ?? [], [results.data]);
+
+  const publish = async (c: Channel) => {
+    setBusySlug(c.slug);
+    try {
+      await addChannel({
+        slug: c.slug,
+        name: c.name,
+        streamUrl: c.streamUrl,
+        country: c.country,
+        categories: c.categories,
+        source: c.source,
+      });
+      refresh();
+      setNote(`${c.name} is now live for everyone.`);
+    } catch (err) {
+      setNote(err instanceof Error ? err.message : "Couldn't add that channel.");
+    } finally {
+      setBusySlug(null);
+    }
+  };
+
+  const unpublish = async (c: Channel) => {
+    setBusySlug(c.slug);
+    try {
+      await deleteChannelForever(c);
+      refresh();
+      setNote(`${c.name} removed from the app.`);
+    } catch (err) {
+      setNote(err instanceof Error ? err.message : "Couldn't remove that channel.");
+    } finally {
+      setBusySlug(null);
+    }
+  };
 
   const saveLogo = async () => {
     if (!logoFor || !/^https?:\/\//i.test(logoUrl.trim())) {
@@ -157,14 +206,20 @@ function Console() {
     setLogoUrl("");
   };
 
+  const rowClass =
+    "flex flex-wrap items-center gap-2 rounded-2xl bg-card px-4 py-3 ring-1 ring-gold/20";
+  const pill =
+    "tap inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[11px] font-semibold text-foreground";
+
   return (
     <div className="px-5 py-6 md:px-12">
       <div className="flex items-center gap-2">
-        <ShieldCheck className="h-5 w-5 text-primary" />
+        <ShieldCheck className="h-5 w-5 text-gold" />
         <h1 className="font-display text-2xl font-bold text-foreground">Admin console</h1>
       </div>
       <p className="mt-1 text-xs text-muted-foreground">
-        Search a channel, test playback, replace its artwork, or remove it from the whole app.
+        Search the full catalogue and add channels — anything you add becomes visible to every user
+        immediately. Remove a channel to pull it from the app.
       </p>
 
       <form
@@ -174,88 +229,120 @@ function Console() {
         }}
         className="mt-5 max-w-xl"
       >
-        <label className="flex items-center gap-3 rounded-2xl bg-secondary/70 px-4 py-3 ring-1 ring-border/60">
-          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <label className="flex items-center gap-3 rounded-2xl bg-secondary/70 px-4 py-3 ring-1 ring-gold/25">
+          <Search className="h-4 w-4 shrink-0 text-gold" />
           <input
             value={term}
             onChange={(e) => setTerm(e.target.value)}
-            placeholder="Search channels"
-            aria-label="Search channels"
+            placeholder="Search channels to add"
+            aria-label="Search channels to add"
             className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
           <button
             type="submit"
-            className="tap rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-primary-foreground"
+            className="tap rounded-full border border-gold/60 bg-gold/12 px-4 py-1.5 text-xs font-semibold text-gold"
           >
             Search
           </button>
         </label>
       </form>
 
-      {note ? <p className="mt-3 text-xs text-primary">{note}</p> : null}
+      {note ? <p className="mt-3 text-xs text-gold">{note}</p> : null}
 
-      <ul className="mt-5 grid gap-2">
-        {items.map((c) => {
-          const isHidden = hidden.includes(c.slug);
-          return (
-            <li
-              key={`${c.slug}-${c.streamUrl}`}
-              className="flex flex-wrap items-center gap-2 rounded-2xl bg-card px-4 py-3 ring-1 ring-border/60"
-            >
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold text-foreground">
-                  {c.name} {isHidden ? <span className="text-destructive">· removed</span> : null}
-                </span>
-                <span className="block truncate text-[11px] text-muted-foreground">
-                  {c.slug} · {c.source}
-                </span>
-              </span>
-              <button
-                type="button"
-                onClick={() => setActive(c)}
-                className="tap inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[11px] font-semibold text-foreground"
-              >
-                <Play className="h-3.5 w-3.5" /> Test
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setLogoFor(c);
-                  setLogoUrl("");
-                }}
-                className="tap inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[11px] font-semibold text-foreground"
-              >
-                <ImagePlus className="h-3.5 w-3.5" /> Logo
-              </button>
-              {isHidden ? (
-                <button
-                  type="button"
-                  onClick={() => void restoreChannel(c.slug)}
-                  className="tap inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[11px] font-semibold text-foreground"
-                >
-                  <RotateCcw className="h-3.5 w-3.5" /> Restore
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => void hideChannel(c.slug, c.name)}
-                  className="tap inline-flex items-center gap-1.5 rounded-full bg-destructive px-3 py-1.5 text-[11px] font-semibold text-destructive-foreground"
-                >
-                  <Trash2 className="h-3.5 w-3.5" /> Remove
-                </button>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      {results.isLoading ? <p className="mt-5 text-xs text-muted-foreground">Searching…</p> : null}
 
-      {results.isLoading ? (
-        <p className="mt-5 text-xs text-muted-foreground">Loading…</p>
+      {items.length > 0 ? (
+        <>
+          <h2 className="mt-7 text-sm font-semibold text-foreground">Search results</h2>
+          <ul className="mt-3 grid gap-2">
+            {items.map((c) => {
+              const published = publishedSlugs.has(c.slug);
+              return (
+                <li key={`${c.slug}-${c.streamUrl}`} className={rowClass}>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-foreground">
+                      {c.name}
+                    </span>
+                    <span className="block truncate text-[11px] text-muted-foreground">
+                      {c.slug} · {c.source}
+                    </span>
+                  </span>
+                  <button type="button" onClick={() => setActive(c)} className={pill}>
+                    <Play className="h-3.5 w-3.5" /> Test
+                  </button>
+                  {published ? (
+                    <button
+                      type="button"
+                      onClick={() => void unpublish(c)}
+                      disabled={busySlug === c.slug}
+                      className="tap inline-flex items-center gap-1.5 rounded-full bg-destructive px-3 py-1.5 text-[11px] font-semibold text-destructive-foreground disabled:opacity-60"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Remove
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => void publish(c)}
+                      disabled={busySlug === c.slug}
+                      className="tap inline-flex items-center gap-1.5 rounded-full border border-gold/60 bg-gold/15 px-3 py-1.5 text-[11px] font-semibold text-gold disabled:opacity-60"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Add to app
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </>
       ) : null}
+
+      <h2 className="mt-9 text-sm font-semibold text-foreground">
+        Published lineup · {curated.length}
+      </h2>
+      <ul className="mt-3 grid gap-2 pb-12">
+        {curated.map((c) => (
+          <li key={c.slug} className={rowClass}>
+            <span className="min-w-0 flex-1">
+              <span className="flex items-center gap-1.5 truncate text-sm font-semibold text-foreground">
+                <Check className="h-3.5 w-3.5 shrink-0 text-gold" /> {c.name}
+              </span>
+              <span className="block truncate text-[11px] text-muted-foreground">
+                {c.slug} · {c.source}
+              </span>
+            </span>
+            <button type="button" onClick={() => setActive(c)} className={pill}>
+              <Play className="h-3.5 w-3.5" /> Test
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setLogoFor(c);
+                setLogoUrl("");
+              }}
+              className={pill}
+            >
+              <ImagePlus className="h-3.5 w-3.5" /> Logo
+            </button>
+            <button
+              type="button"
+              onClick={() => void unpublish(c)}
+              disabled={busySlug === c.slug}
+              className="tap inline-flex items-center gap-1.5 rounded-full bg-destructive px-3 py-1.5 text-[11px] font-semibold text-destructive-foreground disabled:opacity-60"
+            >
+              <Trash2 className="h-3.5 w-3.5" /> Remove
+            </button>
+          </li>
+        ))}
+        {curated.length === 0 ? (
+          <li className="text-xs text-muted-foreground">
+            Nothing published yet. Search above and tap “Add to app”.
+          </li>
+        ) : null}
+      </ul>
 
       {logoFor ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-background/85 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl bg-card p-5 ring-1 ring-border/60">
+          <div className="w-full max-w-md rounded-3xl bg-card p-5 ring-1 ring-gold/25">
             <p className="font-display text-lg font-bold text-foreground">
               Update artwork · {logoFor.name}
             </p>
@@ -278,13 +365,16 @@ function Console() {
               <button
                 type="button"
                 onClick={() => void saveLogo()}
-                className="tap flex-1 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+                className="tap flex-1 rounded-xl border border-gold/60 bg-gold/15 px-4 py-2.5 text-sm font-semibold text-gold"
               >
                 Save logo
               </button>
               <button
                 type="button"
-                onClick={() => setLogoFor(null)}
+                onClick={() => {
+                  setLogoFor(null);
+                  void 0;
+                }}
                 className="tap rounded-xl bg-secondary px-4 py-2.5 text-sm font-semibold text-foreground"
               >
                 Cancel
@@ -294,7 +384,21 @@ function Console() {
         </div>
       ) : null}
 
-      {active ? <PlayerModal channel={active} onClose={() => setActive(null)} /> : null}
+      {active ? (
+        <PlayerModal
+          channel={active}
+          onClose={() => {
+            setActive(null);
+            void 0;
+          }}
+        />
+      ) : null}
+
+      {!q ? null : items.length === 0 && !results.isLoading ? (
+        <p className="mt-4 text-xs text-muted-foreground">
+          No catalogue matches for “{q}”. <RotateCcw className="inline h-3 w-3" /> Try another name.
+        </p>
+      ) : null}
     </div>
   );
 }
