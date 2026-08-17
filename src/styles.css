@@ -34,7 +34,10 @@
   --color-ring: var(--ring);
   --color-ember: var(--ember);
   --color-ember-foreground: var(--ember-foreground);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
 }
+
 
 :root {
   --radius: 0.75rem;
