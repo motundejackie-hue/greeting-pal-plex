@@ -82,8 +82,12 @@ export const Route = createFileRoute("/api/stream-proxy")({
             },
           });
         } catch {
-          return new Response("Stream proxy failed", { status: 502 });
+          return new Response("Stream proxy failed", {
+            status: 404,
+            headers: { "access-control-allow-origin": "*" },
+          });
         }
+
       },
     },
   },
