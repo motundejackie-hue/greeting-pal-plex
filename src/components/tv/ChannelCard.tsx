@@ -40,7 +40,7 @@ function ChannelCardBase({ channel, onOpen, onFavorite, isFavorite }: Props) {
         aria-label={`Play ${channel.name}`}
         className="tap flex w-full flex-col text-left outline-none"
       >
-        <div className="tile-surface relative aspect-video w-full overflow-hidden rounded-xl ring-1 ring-border/60 transition duration-200 group-hover:ring-2 group-hover:ring-primary/70 group-focus-visible:ring-2 group-focus-visible:ring-primary">
+        <div className="tile-surface relative aspect-video w-full overflow-hidden rounded-xl ring-1 ring-gold/30 transition duration-200 group-hover:ring-2 group-hover:ring-gold/80 group-focus-visible:ring-2 group-focus-visible:ring-gold">
           <ChannelLogo
             channel={channel}
             alt={`${channel.name} logo`}
@@ -51,8 +51,8 @@ function ChannelCardBase({ channel, onOpen, onFavorite, isFavorite }: Props) {
           />
 
           <span className="pointer-events-none absolute inset-0 grid place-items-center bg-black/35 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-            <span className="grid h-11 w-11 place-items-center rounded-full bg-brand shadow-ember">
-              <Play className="h-4.5 w-4.5 fill-current text-primary-foreground" />
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-gold-grad shadow-ember">
+              <Play className="h-4.5 w-4.5 fill-current text-background" />
             </span>
           </span>
         </div>
