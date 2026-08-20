@@ -55,7 +55,7 @@ export const Route = createFileRoute("/api/stream-proxy")({
           // Playlists get rewritten so every segment/variant also flows through the proxy.
           if (/mpegurl|m3u/i.test(type) || target.includes(".m3u8")) {
             const text = await upstream.text();
-            const base = new URL(target);
+            const base = new URL(upstream.url || target);
             const rewritten = text
               .split(/\r?\n/)
               .map((line) => {
