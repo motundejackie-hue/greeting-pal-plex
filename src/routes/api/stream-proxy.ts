@@ -10,18 +10,44 @@ export const Route = createFileRoute("/api/stream-proxy")({
           return new Response("Missing stream URL", { status: 400 });
         }
 
-        try {
-          const upstream = await fetch(target, {
+        const origin = new URL(target).origin;
+        const attempt = (extra: Record<string, string>) =>
+          fetch(target, {
+            redirect: "follow",
             headers: {
-              "User-Agent": "Mozilla/5.0",
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36",
               Accept: "application/vnd.apple.mpegurl, application/x-mpegURL, */*",
+              ...extra,
             },
             signal: AbortSignal.timeout(15000),
           });
 
-          if (!upstream.ok || !upstream.body) {
-            return new Response("Unable to fetch stream", { status: upstream.status || 502 });
+        try {
+          let upstream: Response | null = null;
+          try {
+            upstream = await attempt({});
+          } catch {
+            upstream = null;
           }
+          // Some hosts only answer when a same-origin Referer is present.
+          if (!upstream || !upstream.ok) {
+            try {
+              upstream = await attempt({ Referer: `${origin}/`, Origin: origin });
+            } catch {
+              /* keep the first result */
+            }
+          }
+
+          if (!upstream || !upstream.ok || !upstream.body) {
+            // 4xx (not 5xx) so the player just moves to the next candidate
+            // instead of this surfacing as an app-level server error.
+            return new Response("Upstream stream unavailable", {
+              status: 404,
+              headers: { "access-control-allow-origin": "*" },
+            });
+          }
+
 
           const type =
             upstream.headers.get("content-type") ?? "application/vnd.apple.mpegurl";
