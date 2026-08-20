@@ -1,12 +1,16 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { getHome, searchChannels } from "@/lib/iptv.functions";
 import type { Channel } from "@/lib/channel-types";
 import { AppShell } from "@/components/tv/AppShell";
 import { ChannelCard } from "@/components/tv/ChannelCard";
 import { PlayerModal } from "@/components/tv/PlayerModal";
 import { useAuth } from "@/hooks/use-auth";
-import { useCuratedChannels } from "@/lib/curated";
 import { useFavorites, useRecent } from "@/lib/favorites";
+import { useHiddenChannels } from "@/lib/hidden-channels";
+
 
 type Search = { q?: string; country?: string; category?: string };
 
@@ -18,15 +22,13 @@ export const Route = createFileRoute("/browse")({
   }),
   head: () => ({
     meta: [
-      { title: "Browse the Lineup — Opencast" },
+      { title: "Browse Channels — Opencast" },
       {
         name: "description",
-        content: "Filter the curated Opencast lineup by name, country and category.",
+        content: "Filter thousands of free live TV channels by country, category and name.",
       },
-      { property: "og:title", content: "Browse the Lineup — Opencast" },
-      { property: "og:description", content: "Filter the curated Opencast lineup." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Browse Channels — Opencast" },
+      { property: "og:description", content: "Filter free live TV by country, category and name." },
     ],
   }),
   component: BrowsePage,
@@ -43,44 +45,46 @@ function BrowsePage() {
   const navigate = Route.useNavigate();
   const { user } = useAuth();
   const { slugs, toggle } = useFavorites(user?.id ?? null);
+  const hidden = useHiddenChannels();
+
   const { push } = useRecent();
-  const { data: channels = [], isLoading } = useCuratedChannels();
+  const [page, setPage] = useState(1);
+  const [items, setItems] = useState<Channel[]>([]);
   const [active, setActive] = useState<Channel | null>(null);
   const [term, setTerm] = useState(search.q ?? "");
 
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    for (const c of channels) for (const cat of c.categories) set.add(cat);
-    return Array.from(set).sort();
-  }, [channels]);
+  useEffect(() => {
+    setPage(1);
+    setItems([]);
+  }, [search.q, search.country, search.category]);
 
-  const countries = useMemo(() => {
-    const set = new Set<string>();
-    for (const c of channels) if (c.country) set.add(c.country);
-    return Array.from(set).sort();
-  }, [channels]);
+  const filters = useQuery({
+    queryKey: ["filters"],
+    queryFn: () => getHome({ data: {} }),
+    staleTime: 60 * 60 * 1000,
+  });
 
-  const visible = useMemo(() => {
-    const q = (search.q ?? "").trim().toLowerCase();
-    return channels.filter((c) => {
-      if (q && !c.name.toLowerCase().includes(q)) return false;
-      if (search.country && c.country !== search.country) return false;
-      if (
-        search.category &&
-        !c.categories.some((cat) => cat.toLowerCase().includes(search.category!.toLowerCase()))
-      )
-        return false;
-      return true;
-    });
-  }, [channels, search.q, search.country, search.category]);
+  const result = useQuery({
+    queryKey: ["browse", search.q, search.country, search.category, page],
+    queryFn: () => searchChannels({ data: { ...search, page } }),
+    staleTime: 10 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (result.data) setItems((prev) => (page === 1 ? result.data.items : [...prev, ...result.data.items]));
+  }, [result.data, page]);
 
   const apply = (patch: Partial<Search>) =>
     void navigate({ search: (prev: Search) => ({ ...prev, ...patch }) });
 
+  const visible = items.filter((c) => !hidden.includes(c.slug));
+  const total = result.data?.total ?? 0;
+
+
   return (
     <>
       <AppShell>
-        <div className="px-5 py-6 md:px-12">
+        <div className="px-4 md:px-8">
           <div className="mb-4 flex flex-wrap gap-2">
             <form
               onSubmit={(e) => {
@@ -94,19 +98,19 @@ function BrowsePage() {
                 onChange={(e) => setTerm(e.target.value)}
                 placeholder="Search by name…"
                 aria-label="Search channels"
-                className="w-full rounded-full bg-secondary px-4 py-2 text-xs text-foreground outline-none ring-1 ring-gold/20"
+                className="w-full rounded-full bg-secondary px-4 py-2 text-xs text-foreground outline-none"
               />
             </form>
             <select
               aria-label="Country"
               value={search.country ?? ""}
               onChange={(e) => apply({ country: e.target.value || undefined })}
-              className="rounded-full bg-secondary px-3 py-2 text-xs text-foreground ring-1 ring-gold/20"
+              className="rounded-full bg-secondary px-3 py-2 text-xs text-foreground"
             >
               <option value="">All countries</option>
-              {countries.map((code) => (
-                <option key={code} value={code}>
-                  {code}
+              {(filters.data?.countries ?? []).map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.flag} {c.name} ({c.count})
                 </option>
               ))}
             </select>
@@ -114,19 +118,19 @@ function BrowsePage() {
               aria-label="Category"
               value={search.category ?? ""}
               onChange={(e) => apply({ category: e.target.value || undefined })}
-              className="rounded-full bg-secondary px-3 py-2 text-xs text-foreground ring-1 ring-gold/20"
+              className="rounded-full bg-secondary px-3 py-2 text-xs text-foreground"
             >
               <option value="">All categories</option>
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {c}
+              {(filters.data?.categories ?? []).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} ({c.count})
                 </option>
               ))}
             </select>
           </div>
 
           <p className="mb-3 text-[11px] text-muted-foreground">
-            {isLoading ? "Loading…" : `${visible.length.toLocaleString()} channels`}
+            {result.isLoading && page === 1 ? "Loading…" : `${total.toLocaleString()} channels`}
           </p>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
@@ -145,10 +149,19 @@ function BrowsePage() {
             ))}
           </div>
 
-          {!isLoading && visible.length === 0 ? (
-            <p className="py-10 text-center text-xs text-muted-foreground">
-              Nothing matches yet — the lineup is curated by the Opencast admin.
-            </p>
+
+          {visible.length < total ? (
+            <div className="py-8 text-center">
+              <button
+                type="button"
+                onClick={() => setPage((p) => p + 1)}
+                disabled={result.isFetching}
+                className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-60"
+              >
+                {result.isFetching ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+                Load more
+              </button>
+            </div>
           ) : (
             <div className="py-8" />
           )}
