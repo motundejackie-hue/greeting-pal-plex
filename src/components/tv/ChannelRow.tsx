@@ -24,10 +24,10 @@ export function ChannelRow({ title, subtitle, items, onOpen, onFavorite, favorit
   if (items.length === 0) return null;
 
   return (
-    <section className="mb-10">
+    <section className="mb-12">
       <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 px-5 md:px-12">
         <div className="min-w-0">
-          <h2 className="truncate text-lg font-semibold text-foreground md:text-xl">{title}</h2>
+          <h2 className="truncate font-display text-xl text-foreground md:text-2xl">{title}</h2>
           {subtitle ? (
             <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
           ) : null}
@@ -64,7 +64,7 @@ export function ChannelRow({ title, subtitle, items, onOpen, onFavorite, favorit
         {items.slice(0, 24).map((c) => (
           <div
             key={`${c.slug}-${c.streamUrl}`}
-            className="w-[210px] shrink-0 sm:w-[250px] md:w-[290px]"
+            className="w-[136px] shrink-0 sm:w-[158px] md:w-[184px]"
           >
             <ChannelCard
               channel={c}
