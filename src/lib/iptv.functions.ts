@@ -58,6 +58,22 @@ export const getChannelsBySlugs = createServerFn({ method: "GET" })
     return { items: found };
   });
 
+export const getChannelBySlug = createServerFn({ method: "GET" })
+  .inputValidator((data: { slug?: string } | undefined) => ({
+    slug: String(data?.slug ?? "").slice(0, 120),
+  }))
+  .handler(async ({ data }) => {
+    const { getCatalog } = await import("./iptv.server");
+    const catalog = await getCatalog();
+    const channel = catalog.channels.find((item) => item.slug === data.slug) ?? null;
+    if (!channel) return { channel: null, related: [] };
+    const categories = new Set(channel.categories);
+    const related = catalog.channels
+      .filter((item) => item.slug !== channel.slug && item.categories.some((category) => categories.has(category)))
+      .slice(0, 18);
+    return { channel, related };
+  });
+
 /** Alternate stream links for a channel, tagged with the server they came from. */
 export const getStreamSources = createServerFn({ method: "GET" })
   .inputValidator((data: { slug?: string } | undefined) => ({
