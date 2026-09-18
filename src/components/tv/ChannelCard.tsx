@@ -50,7 +50,7 @@ function ChannelCardBase({ channel, onOpen, onFavorite, isFavorite }: Props) {
             aria-hidden="true"
             loading="lazy"
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover opacity-70 transition-transform duration-500 group-hover:scale-105"
+            className="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
           />
           <span className="absolute inset-0 bg-[linear-gradient(0deg,var(--background)_4%,color-mix(in_oklab,var(--background)_55%,transparent)_38%,color-mix(in_oklab,var(--background)_10%,transparent)_100%)]" />
 
