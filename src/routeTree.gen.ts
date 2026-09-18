@@ -18,6 +18,8 @@ import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WatchChannelSlugRouteImport } from './routes/watch.$channelSlug'
+import { Route as ChannelChannelSlugRouteImport } from './routes/channel.$channelSlug'
 import { Route as ApiStreamProxyRouteImport } from './routes/api/stream-proxy'
 
 const TutorialsRoute = TutorialsRouteImport.update({
@@ -65,6 +67,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WatchChannelSlugRoute = WatchChannelSlugRouteImport.update({
+  id: '/watch/$channelSlug',
+  path: '/watch/$channelSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChannelChannelSlugRoute = ChannelChannelSlugRouteImport.update({
+  id: '/channel/$channelSlug',
+  path: '/channel/$channelSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiStreamProxyRoute = ApiStreamProxyRouteImport.update({
   id: '/api/stream-proxy',
   path: '/api/stream-proxy',
@@ -82,6 +94,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
+  '/channel/$channelSlug': typeof ChannelChannelSlugRoute
+  '/watch/$channelSlug': typeof WatchChannelSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +108,8 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
+  '/channel/$channelSlug': typeof ChannelChannelSlugRoute
+  '/watch/$channelSlug': typeof WatchChannelSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +123,8 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/tutorials': typeof TutorialsRoute
   '/api/stream-proxy': typeof ApiStreamProxyRoute
+  '/channel/$channelSlug': typeof ChannelChannelSlugRoute
+  '/watch/$channelSlug': typeof WatchChannelSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +139,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tutorials'
     | '/api/stream-proxy'
+    | '/channel/$channelSlug'
+    | '/watch/$channelSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +153,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tutorials'
     | '/api/stream-proxy'
+    | '/channel/$channelSlug'
+    | '/watch/$channelSlug'
   id:
     | '__root__'
     | '/'
@@ -145,6 +167,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tutorials'
     | '/api/stream-proxy'
+    | '/channel/$channelSlug'
+    | '/watch/$channelSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +182,8 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   TutorialsRoute: typeof TutorialsRoute
   ApiStreamProxyRoute: typeof ApiStreamProxyRoute
+  ChannelChannelSlugRoute: typeof ChannelChannelSlugRoute
+  WatchChannelSlugRoute: typeof WatchChannelSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,6 +251,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/watch/$channelSlug': {
+      id: '/watch/$channelSlug'
+      path: '/watch/$channelSlug'
+      fullPath: '/watch/$channelSlug'
+      preLoaderRoute: typeof WatchChannelSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/channel/$channelSlug': {
+      id: '/channel/$channelSlug'
+      path: '/channel/$channelSlug'
+      fullPath: '/channel/$channelSlug'
+      preLoaderRoute: typeof ChannelChannelSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/stream-proxy': {
       id: '/api/stream-proxy'
       path: '/api/stream-proxy'
@@ -246,6 +286,8 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   TutorialsRoute: TutorialsRoute,
   ApiStreamProxyRoute: ApiStreamProxyRoute,
+  ChannelChannelSlugRoute: ChannelChannelSlugRoute,
+  WatchChannelSlugRoute: WatchChannelSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
