@@ -45,12 +45,10 @@ const NAV = [
 /** Frosted-glass pill tabs, matching the cinematic reference layout. */
 const TABS = [
   { icon: Home, label: "Home", to: "/", search: undefined as Record<string, string> | undefined },
-  { icon: Tv, label: "Live TV", to: "/browse", search: { category: "general" } },
   { icon: Film, label: "Movies", to: "/browse", search: { category: "movies" } },
-  { icon: Clapperboard, label: "Shows", to: "/browse", search: { category: "series" } },
-  { icon: Baby, label: "Kids", to: "/browse", search: { category: "kids" } },
-  { icon: Heart, label: "Library", to: "/favorites", search: undefined },
-  { icon: Settings, label: "Settings", to: "/settings", search: undefined },
+  { icon: Clapperboard, label: "TV Shows", to: "/browse", search: { category: "series" } },
+  { icon: Gamepad2, label: "Anime", to: "/browse", search: { category: "animation" } },
+  { icon: Tv, label: "Live TV", to: "/browse", search: { category: "general" } },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -75,37 +73,29 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 bg-background/70 px-3 py-2.5 backdrop-blur-xl md:px-8">
+      <header className="sticky top-0 z-40 grid h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border/50 bg-background/92 px-4 backdrop-blur-xl md:px-10">
         {/* Left: menu + brand */}
         <div className="flex min-w-0 items-center gap-2">
           <button
             type="button"
             aria-label="Open menu"
             onClick={() => setOpen(true)}
-            className="tap grid h-9 w-9 shrink-0 place-items-center rounded-full bg-secondary/70 text-foreground ring-1 ring-border/60 transition hover:bg-secondary"
+            className="tap grid h-9 w-9 shrink-0 place-items-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
           >
             <Menu className="h-4 w-4" />
           </button>
           <Link to="/" className="flex min-w-0 items-center gap-2">
-            <img src={appIcon} alt="Opencast" className="h-8 w-8 shrink-0 rounded-xl" />
-            <span className="hidden font-display text-base font-bold tracking-tight text-foreground sm:inline">
+            <img src={appIcon} alt="Opencast" className="h-7 w-7 shrink-0 rounded-md" />
+            <span className="hidden font-display text-xl text-foreground sm:inline">
               Opencast
             </span>
-          </Link>
-          <Link
-            to="/roku"
-            className="tap ml-1 hidden shrink-0 items-center gap-1.5 rounded-full bg-secondary/70 px-3 py-1.5 text-[11px] font-semibold text-foreground ring-1 ring-border/60 transition hover:bg-secondary sm:flex"
-          >
-            <Radio className="h-3.5 w-3.5 text-primary" />
-            <span className="hidden md:inline">Watch on Roku TV</span>
-            <span className="md:hidden">Roku</span>
           </Link>
         </div>
 
         {/* Center: frosted pill tabs */}
         <nav
           aria-label="Sections"
-          className="no-scrollbar flex min-w-0 items-center justify-center gap-1.5 overflow-x-auto"
+          className="no-scrollbar hidden min-w-0 items-center justify-center gap-7 overflow-x-auto md:flex"
         >
           {TABS.map((tab) => {
             const Icon = tab.icon;
@@ -114,14 +104,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={tab.label}
                 to={tab.to}
                 search={tab.search as never}
-                className={`tap flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur transition md:text-[13px] ${
+                className={`tap flex h-16 shrink-0 items-center border-b px-1 text-[10px] font-semibold uppercase tracking-[0.16em] transition ${
                   tabActive(tab)
-                    ? "bg-foreground/95 text-background shadow-tv"
-                    : "bg-secondary/45 text-muted-foreground ring-1 ring-border/50 hover:bg-secondary/80 hover:text-foreground"
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <Icon className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{tab.label}</span>
+                <span>{tab.label}</span>
               </Link>
             );
           })}
@@ -138,17 +127,17 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Search className="h-4 w-4" />
           </button>
           <Link
-            to="/settings"
-            aria-label="Settings"
+            to="/favorites"
+            aria-label="Library"
             className="hidden h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground sm:grid"
           >
-            <Settings className="h-4 w-4" />
+            <Heart className="h-4 w-4" />
           </Link>
           <Link
             to="/auth"
             aria-label={user ? "Account" : "Sign in"}
             title={user ? "Account" : "Sign in"}
-            className="tap grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground shadow-ember transition hover:brightness-110"
+            className="tap grid h-9 w-9 place-items-center rounded-full bg-secondary text-foreground ring-1 ring-border transition hover:bg-muted"
           >
             {user ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
           </Link>
@@ -228,7 +217,19 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       ) : null}
 
-      <main>{children}</main>
+      <main className="pb-20 md:pb-0">{children}</main>
+
+      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-background/95 px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden" aria-label="Mobile navigation">
+        {TABS.map((tab) => {
+          const Icon = tab.icon;
+          const active = tabActive(tab);
+          return (
+            <Link key={tab.label} to={tab.to} search={tab.search as never} className={`grid min-w-0 place-items-center gap-1 py-2 text-[9px] ${active ? "text-primary" : "text-muted-foreground"}`}>
+              <Icon className="h-5 w-5" /><span className="truncate">{tab.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 }
