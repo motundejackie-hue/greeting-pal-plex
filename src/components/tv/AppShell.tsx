@@ -3,7 +3,9 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Baby,
   Clapperboard,
+  Download,
   Film,
+  Library,
   Gamepad2,
   GraduationCap,
   Heart,
@@ -73,65 +75,81 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 grid h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border/50 bg-background/92 px-4 backdrop-blur-xl md:px-10">
+      <header className="sticky top-0 z-40 grid h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border/40 bg-background/92 px-4 backdrop-blur-xl md:px-8">
         {/* Left: menu + brand */}
         <div className="flex min-w-0 items-center gap-2">
           <button
             type="button"
             aria-label="Open menu"
             onClick={() => setOpen(true)}
-            className="tap grid h-9 w-9 shrink-0 place-items-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+            className="tap grid h-9 w-9 shrink-0 place-items-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground md:hidden"
           >
             <Menu className="h-4 w-4" />
           </button>
-          <Link to="/" className="flex min-w-0 items-center gap-2">
-            <img src={appIcon} alt="Opencast" className="h-7 w-7 shrink-0 rounded-md" />
-            <span className="hidden font-display text-xl text-foreground sm:inline">
+          <Link to="/" className="flex min-w-0 items-center gap-2.5">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-brand shadow-ember">
+              <img src={appIcon} alt="" className="h-5 w-5" />
+            </span>
+            <span className="hidden font-display text-2xl leading-none text-foreground sm:inline">
               Opencast
             </span>
           </Link>
         </div>
 
-        {/* Center: frosted pill tabs */}
+        {/* Center: primary sections */}
         <nav
           aria-label="Sections"
-          className="no-scrollbar hidden min-w-0 items-center justify-center gap-7 overflow-x-auto md:flex"
+          className="no-scrollbar hidden min-w-0 items-center justify-start gap-7 overflow-x-auto pl-6 md:flex"
         >
-          {TABS.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <Link
-                key={tab.label}
-                to={tab.to}
-                search={tab.search as never}
-                className={`tap flex h-16 shrink-0 items-center border-b px-1 text-[10px] font-semibold uppercase tracking-[0.16em] transition ${
-                  tabActive(tab)
-                    ? "border-primary text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <span>{tab.label}</span>
-              </Link>
-            );
-          })}
+          {TABS.map((tab) => (
+            <Link
+              key={tab.label}
+              to={tab.to}
+              search={tab.search as never}
+              className={`tap relative flex h-16 shrink-0 items-center text-[11px] font-semibold uppercase tracking-[0.18em] transition ${
+                tabActive(tab)
+                  ? "text-foreground after:absolute after:inset-x-0 after:bottom-[18px] after:h-[2px] after:bg-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab.label}
+            </Link>
+          ))}
         </nav>
 
-        {/* Right: search, settings, compact account */}
-        <div className="flex shrink-0 items-center gap-1.5">
+        {/* Right: search, download, library, account */}
+        <div className="flex shrink-0 items-center gap-2">
+          <form onSubmit={submit} className="hidden lg:block">
+            <label className="flex w-64 items-center gap-2 rounded-full bg-secondary/80 px-4 py-2 ring-1 ring-border/60 focus-within:ring-2 focus-within:ring-primary/60">
+              <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search..."
+                aria-label="Search channels"
+                className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
+              />
+            </label>
+          </form>
           <button
             type="button"
             aria-label="Search channels"
             onClick={() => setSearchOpen((v) => !v)}
-            className="tap grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+            className="tap grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground lg:hidden"
           >
             <Search className="h-4 w-4" />
           </button>
           <Link
-            to="/favorites"
-            aria-label="Library"
-            className="hidden h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground sm:grid"
+            to="/roku"
+            className="tap hidden items-center gap-2 rounded-full bg-brand px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-foreground shadow-ember sm:inline-flex"
           >
-            <Heart className="h-4 w-4" />
+            <Download className="h-3.5 w-3.5" /> Download App
+          </Link>
+          <Link
+            to="/favorites"
+            className="tap hidden items-center gap-2 px-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground transition hover:text-foreground lg:inline-flex"
+          >
+            <Library className="h-4 w-4" /> Library
           </Link>
           <Link
             to="/auth"
@@ -141,18 +159,26 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             {user ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
           </Link>
+          <button
+            type="button"
+            aria-label="Open menu"
+            onClick={() => setOpen(true)}
+            className="tap hidden h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-secondary hover:text-foreground md:grid"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
         </div>
       </header>
 
       {searchOpen ? (
-        <form onSubmit={submit} className="px-3 pb-2 md:px-8">
+        <form onSubmit={submit} className="px-3 pb-2 md:px-8 lg:hidden">
           <label className="flex min-w-0 items-center gap-2 rounded-full bg-secondary px-4 py-2">
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
             <input
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search channels…"
+              placeholder="Search movies, shows, channels…"
               aria-label="Search channels"
               className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
             />

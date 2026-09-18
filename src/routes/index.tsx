@@ -1,6 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Search } from "lucide-react";
 
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getHome } from "@/lib/iptv.functions";
@@ -56,7 +55,6 @@ function HomePage() {
   const { user } = useAuth();
   const { slugs, toggle } = useFavorites(user?.id ?? null);
   const { slugs: recent, push } = useRecent();
-  const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
   const details = useCallback(
@@ -89,31 +87,6 @@ function HomePage() {
         />
 
         <GenreRail />
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void navigate({ to: "/browse", search: { q: query } });
-          }}
-          className="mb-10 px-5 md:px-12"
-        >
-          <label className="flex min-w-0 max-w-xl items-center gap-3 rounded-sm bg-secondary/70 px-5 py-3 ring-1 ring-border/60 focus-within:ring-2 focus-within:ring-primary/60">
-            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search channels, genres, countries"
-              aria-label="Search channels"
-              className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-            />
-            <button
-              type="submit"
-              className="tap shrink-0 rounded-sm bg-brand px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary-foreground"
-            >
-              Search
-            </button>
-          </label>
-        </form>
 
         <ContinueWatching slugs={recent} onOpen={watch} />
 

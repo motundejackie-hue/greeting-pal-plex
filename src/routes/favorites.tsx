@@ -69,13 +69,13 @@ function FavoritesPage() {
             </Link>
           </div>
         ) : isLoading ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div className="poster-grid">
             {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="aspect-[4/3] animate-pulse rounded-2xl bg-card" />
+              <div key={i} className="poster-skeleton" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div className="poster-grid">
             {items.map((c) => (
               <ChannelCard
                 key={c.slug}

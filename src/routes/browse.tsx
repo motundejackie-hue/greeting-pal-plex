@@ -133,7 +133,15 @@ function BrowsePage() {
             {result.isLoading && page === 1 ? "Loading…" : `${total.toLocaleString()} channels`}
           </p>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {result.isLoading && page === 1 ? (
+            <div className="poster-grid">
+              {Array.from({ length: 18 }).map((_, i) => (
+                <div key={i} className="poster-skeleton" />
+              ))}
+            </div>
+          ) : null}
+
+          <div className="poster-grid">
             {visible.map((c) => (
               <ChannelCard
                 key={`${c.slug}-${c.streamUrl}`}

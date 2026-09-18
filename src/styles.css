@@ -44,26 +44,26 @@
   --card-foreground: oklch(0.94 0.012 30);
   --popover: oklch(0.10 0.008 20);
   --popover-foreground: oklch(0.94 0.012 30);
-  --primary: oklch(0.67 0.105 12);
-  --primary-foreground: oklch(0.985 0.005 20);
-  --secondary: oklch(0.155 0.01 20);
+  --primary: oklch(0.58 0.215 26);
+  --primary-foreground: oklch(0.99 0.004 20);
+  --secondary: oklch(0.155 0.012 22);
   --secondary-foreground: oklch(0.90 0.012 25);
   --muted: oklch(0.135 0.008 20);
-  --muted-foreground: oklch(0.62 0.018 20);
-  --accent: oklch(0.60 0.09 12);
-  --accent-foreground: oklch(0.985 0.005 20);
-  --destructive: oklch(0.54 0.16 24);
+  --muted-foreground: oklch(0.63 0.02 22);
+  --accent: oklch(0.55 0.20 26);
+  --accent-foreground: oklch(0.99 0.004 20);
+  --destructive: oklch(0.55 0.21 27);
   --destructive-foreground: oklch(0.98 0.005 20);
-  --border: oklch(0.21 0.012 20);
+  --border: oklch(0.215 0.014 22);
   --input: oklch(0.15 0.01 20);
-  --ring: oklch(0.67 0.105 12);
-  --ember: oklch(0.67 0.105 12);
-  --ember-foreground: oklch(0.985 0.005 20);
-  --gradient-brand: linear-gradient(135deg, oklch(0.61 0.11 10), oklch(0.72 0.09 16));
-  --gradient-brand-soft: linear-gradient(135deg, oklch(0.65 0.09 12 / 0.2), oklch(0.10 0.008 20 / 0.95));
-  --gradient-stage: radial-gradient(120% 90% at 50% 0%, oklch(0.20 0.035 14) 0%, oklch(0.10 0.01 20) 56%, oklch(0.065 0.005 20) 100%);
-  --gradient-tile: linear-gradient(160deg, oklch(0.18 0.015 20) 0%, oklch(0.105 0.007 20) 100%);
-  --shadow-ember: 0 14px 38px -16px oklch(0.67 0.105 12 / 0.5);
+  --ring: oklch(0.58 0.215 26);
+  --ember: oklch(0.58 0.215 26);
+  --ember-foreground: oklch(0.99 0.004 20);
+  --gradient-brand: linear-gradient(135deg, oklch(0.52 0.22 24), oklch(0.63 0.20 32));
+  --gradient-brand-soft: linear-gradient(135deg, oklch(0.55 0.20 26 / 0.22), oklch(0.10 0.008 20 / 0.95));
+  --gradient-stage: radial-gradient(120% 90% at 50% 0%, oklch(0.22 0.07 26) 0%, oklch(0.10 0.012 22) 56%, oklch(0.065 0.005 20) 100%);
+  --gradient-tile: linear-gradient(160deg, oklch(0.18 0.018 24) 0%, oklch(0.105 0.007 20) 100%);
+  --shadow-ember: 0 14px 38px -16px oklch(0.58 0.215 26 / 0.55);
   --shadow-tv: 0 10px 30px -12px oklch(0 0 0 / 0.9);
 
 }
@@ -210,4 +210,21 @@ button, a, [role="button"], input[type="range"], select {
 @utility signal-bar {
   transform-origin: bottom;
   animation: signal-bar 1s ease-in-out infinite;
+}
+
+/* --- Shared poster grid: one card language across every page --- */
+@utility poster-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (min-width: 480px) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (min-width: 768px) { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
+  @media (min-width: 1024px) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  @media (min-width: 1440px) { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@utility poster-skeleton {
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-lg);
+  background-image: var(--gradient-tile);
+  animation: logo-pulse 1.6s ease-in-out infinite;
 }

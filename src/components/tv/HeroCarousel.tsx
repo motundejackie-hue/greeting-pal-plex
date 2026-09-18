@@ -14,7 +14,9 @@ type Props = {
 /** Full-width cinematic feature that rotates through the night's headline channels. */
 export function HeroCarousel({ featured, onPlay, totalChannels }: Props) {
   const [index, setIndex] = useState(0);
-  const slides = featured.slice(0, 5);
+  const slides = featured
+    .filter((c, i, arr) => arr.findIndex((x) => x.slug === c.slug) === i)
+    .slice(0, 5);
 
   useEffect(() => {
     if (slides.length < 2) return;
@@ -26,7 +28,7 @@ export function HeroCarousel({ featured, onPlay, totalChannels }: Props) {
   const channel = slides[Math.min(index, slides.length - 1)];
 
   return (
-    <section className="relative mb-6 h-[78vh] min-h-[430px] w-full overflow-hidden md:h-[82vh]">
+    <section className="relative mb-6 h-[56vh] min-h-[380px] w-full overflow-hidden md:h-[62vh] md:max-h-[560px]">
       {slides.map((c, i) => (
         <img
           key={c.slug}
