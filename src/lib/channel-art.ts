@@ -6,6 +6,7 @@ import familyImg from "@/assets/hero/cat2-family.png.asset.json";
 import lifestyleImg from "@/assets/hero/cat2-lifestyle.png.asset.json";
 import animeImg from "@/assets/hero/cat2-anime.jpg";
 import musicImg from "@/assets/hero/cat2-music.jpg";
+import posterFallback from "@/assets/hero/poster-fallback.jpg";
 import type { Channel } from "@/lib/channel-types";
 
 const ART: Record<string, string> = {
@@ -13,6 +14,9 @@ const ART: Record<string, string> = {
   sports: sportsImg.url,
   movies: moviesImg.url,
   movie: moviesImg.url,
+  general: posterFallback,
+  entertainment: posterFallback,
+  classic: posterFallback,
   documentary: natureImg.url,
   kids: familyImg.url,
   family: familyImg.url,
@@ -24,5 +28,5 @@ const ART: Record<string, string> = {
 
 export function getChannelArt(channel: Channel): string {
   const category = channel.categories.find((item) => ART[item.toLowerCase()]);
-  return category ? ART[category.toLowerCase()] : moviesImg.url;
+  return category ? ART[category.toLowerCase()] : posterFallback;
 }
