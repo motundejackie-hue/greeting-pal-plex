@@ -1,67 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Play } from "lucide-react";
+import { Info, Play } from "lucide-react";
 import type { Channel } from "@/lib/channel-types";
-import newsImg from "@/assets/hero/cat2-news.png.asset.json";
-import sportsImg from "@/assets/hero/cat2-sports.png.asset.json";
-import moviesImg from "@/assets/hero/cat2-movies.png.asset.json";
-import natureImg from "@/assets/hero/cat2-nature.png.asset.json";
-import familyImg from "@/assets/hero/cat2-family.png.asset.json";
-import lifestyleImg from "@/assets/hero/cat2-lifestyle.png.asset.json";
-import animeImg from "@/assets/hero/cat2-anime.jpg";
-import musicImg from "@/assets/hero/cat2-music.jpg";
-
-/** Eight category tiles — the app's featured lineup. */
-const CATEGORIES = [
-  {
-    id: "news",
-    title: "Live News",
-    blurb: "Breaking coverage from the world's biggest newsrooms, streaming 24/7.",
-    image: newsImg.url,
-  },
-  {
-    id: "sports",
-    title: "Live Sports",
-    blurb: "Match nights, leagues and highlights from every corner of the planet.",
-    image: sportsImg.url,
-  },
-  {
-    id: "movies",
-    title: "Movies",
-    blurb: "Round-the-clock movie channels — classics, action and everything between.",
-    image: moviesImg.url,
-  },
-  {
-    id: "documentary",
-    title: "Nature & Docs",
-    blurb: "Award-winning documentaries and wildlife channels, always on.",
-    image: natureImg.url,
-  },
-  {
-    id: "animation",
-    title: "Anime",
-    blurb: "Series and movies from Japan's biggest studios, around the clock.",
-    image: animeImg,
-  },
-  {
-    id: "kids",
-    title: "Kids & Family",
-    blurb: "Safe, colourful, always-on channels the whole family can share.",
-    image: familyImg.url,
-  },
-  {
-    id: "lifestyle",
-    title: "Lifestyle & Cooking",
-    blurb: "Food, travel and home shows for easy everyday viewing.",
-    image: lifestyleImg.url,
-  },
-  {
-    id: "music",
-    title: "Music",
-    blurb: "Concerts, charts and non-stop music television.",
-    image: musicImg,
-  },
-];
+import { ChannelLogo } from "./ChannelLogo";
+import { getChannelArt } from "@/lib/channel-art";
 
 type Props = {
   featured: Channel[];
@@ -69,96 +11,97 @@ type Props = {
   totalChannels: number;
 };
 
+/** Full-width cinematic feature that rotates through the night's headline channels. */
 export function HeroCarousel({ featured, onPlay, totalChannels }: Props) {
   const [index, setIndex] = useState(0);
+  const slides = featured.slice(0, 5);
 
   useEffect(() => {
-    const id = window.setInterval(() => setIndex((i) => (i + 1) % CATEGORIES.length), 7000);
+    if (slides.length < 2) return;
+    const id = window.setInterval(() => setIndex((i) => (i + 1) % slides.length), 8000);
     return () => window.clearInterval(id);
-  }, []);
+  }, [slides.length]);
 
-  const slide = CATEGORIES[index];
-  const channel = featured[index % Math.max(featured.length, 1)] ?? null;
+  if (slides.length === 0) return null;
+  const channel = slides[Math.min(index, slides.length - 1)];
 
   return (
-    <section className="mb-10">
-      <div className="relative h-[230px] w-full overflow-hidden md:h-[380px]">
-        {CATEGORIES.map((s, i) => (
-          <img
-            key={s.id}
-            src={s.image}
-            alt=""
-            aria-hidden="true"
-            width={1600}
-            height={900}
-            loading={i === 0 ? "eager" : "lazy"}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-out ${
-              i === index ? "scale-100 opacity-100" : "scale-105 opacity-0"
-            }`}
-          />
-        ))}
+    <section className="relative mb-6 h-[78vh] min-h-[430px] w-full overflow-hidden md:h-[82vh]">
+      {slides.map((c, i) => (
+        <img
+          key={c.slug}
+          src={getChannelArt(c)}
+          alt=""
+          aria-hidden="true"
+          loading={i === 0 ? "eager" : "lazy"}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ease-out ${
+            i === index ? "scale-100 opacity-100" : "scale-105 opacity-0"
+          }`}
+        />
+      ))}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/20 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background/70 to-transparent md:h-1/3" />
-        <div className="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-background/75 via-background/10 to-transparent md:w-2/3" />
+      <div className="absolute inset-0 bg-[linear-gradient(0deg,var(--background)_2%,color-mix(in_oklab,var(--background)_55%,transparent)_45%,transparent_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,var(--background)_0%,color-mix(in_oklab,var(--background)_70%,transparent)_42%,transparent_82%)]" />
 
-
-        <div className="absolute inset-0 flex flex-col justify-end gap-3 px-5 pb-10 md:max-w-2xl md:justify-center md:px-12 md:pb-0">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-primary">
-            {totalChannels.toLocaleString()} free channels
-          </p>
-          <h1 className="font-display text-3xl font-bold leading-tight text-foreground md:text-6xl">
-            {slide.title}
-          </h1>
-          <p className="max-w-md text-xs text-muted-foreground md:text-base">{slide.blurb}</p>
-          <div className="mt-2 flex items-center gap-2.5">
-            {channel ? (
-              <button
-                type="button"
-                onClick={() => onPlay(channel)}
-                className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-2.5 text-xs font-semibold text-background transition hover:opacity-90 md:text-sm"
-              >
-                <Play className="h-4 w-4 fill-current" /> Watch now
-              </button>
-            ) : null}
-            <Link
-              to="/browse"
-              search={{ category: slide.id }}
-              className="inline-flex items-center gap-2 rounded-full bg-secondary/80 px-5 py-2.5 text-xs font-semibold text-foreground backdrop-blur transition hover:bg-secondary md:text-sm"
-            >
-              Explore {slide.title}
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="no-scrollbar -mt-6 flex gap-3 overflow-x-auto px-5 pb-1 md:gap-4 md:px-12">
-        {CATEGORIES.map((c, i) => (
-          <Link
-            key={c.id}
-            to="/browse"
-            search={{ category: c.id }}
-            onMouseEnter={() => setIndex(i)}
-            onFocus={() => setIndex(i)}
-            className={`group relative h-[86px] w-[150px] shrink-0 overflow-hidden rounded-2xl ring-1 transition-all duration-300 md:h-[112px] md:w-[210px] ${
-              i === index
-                ? "scale-[1.03] ring-2 ring-primary shadow-[0_10px_30px_-12px] shadow-primary/60"
-                : "ring-border/60 hover:ring-primary/70"
-            }`}
-          >
-            <img
-              src={c.image}
-              alt=""
-              aria-hidden="true"
-              loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      <div className="relative flex h-full max-w-3xl flex-col justify-end gap-4 px-5 pb-14 md:justify-center md:px-12 md:pb-20">
+        <div className="flex items-center gap-3">
+          <div className="grid h-12 w-24 shrink-0 place-items-center overflow-hidden rounded-md bg-card/70 ring-1 ring-border/60 backdrop-blur">
+            <ChannelLogo
+              channel={channel}
+              loading="eager"
+              className="h-full w-full object-contain p-2"
+              placeholderClassName="font-display text-lg text-foreground"
             />
-            <span className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/10 to-transparent" />
-            <span className="absolute inset-x-0 bottom-0 truncate px-3 pb-2 text-[11px] font-semibold text-foreground md:text-sm">
-              {c.title}
-            </span>
+          </div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-primary">
+            Opencast selection · {String(index + 1).padStart(2, "0")}
+          </p>
+        </div>
+
+        <h1 className="font-display text-4xl leading-[0.95] text-foreground md:text-7xl">
+          {channel.name}
+        </h1>
+
+        <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <span className="rounded-sm bg-secondary/80 px-2 py-0.5 text-primary">Live</span>
+          <span>{(channel.categories[0] ?? "Television").replace(/^\w/, (m) => m.toUpperCase())}</span>
+          {channel.country ? <span>{channel.country}</span> : null}
+          <span>{channel.quality ?? "HD"}</span>
+        </div>
+
+        <p className="max-w-lg text-xs leading-6 text-secondary-foreground md:text-sm">
+          Streaming now from {channel.name}, one of {totalChannels.toLocaleString()} free live
+          channels with automatic source recovery.
+        </p>
+
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onPlay(channel)}
+            className="tap inline-flex items-center gap-2 rounded-sm bg-brand px-7 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-primary-foreground shadow-ember"
+          >
+            <Play className="h-4 w-4 fill-current" /> Watch
+          </button>
+          <Link
+            to="/channel/$channelSlug"
+            params={{ channelSlug: channel.slug }}
+            className="tap inline-flex items-center gap-2 rounded-sm bg-secondary/80 px-6 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground backdrop-blur transition hover:bg-secondary"
+          >
+            <Info className="h-4 w-4" /> Info
           </Link>
-        ))}
+        </div>
+
+        <div className="mt-4 flex gap-1.5">
+          {slides.map((c, i) => (
+            <button
+              key={c.slug}
+              type="button"
+              aria-label={`Show ${c.name}`}
+              onClick={() => setIndex(i)}
+              className={`h-[3px] w-9 rounded-full transition ${i === index ? "bg-primary" : "bg-border"}`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
