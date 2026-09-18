@@ -30,6 +30,7 @@ export const Route = createFileRoute("/channel/$channelSlug")({
 
 function ChannelDetailsPage() {
   const { channel, related } = Route.useLoaderData();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { slugs, toggle } = useFavorites(user?.id ?? null);
   const favorite = slugs.includes(channel.slug);
