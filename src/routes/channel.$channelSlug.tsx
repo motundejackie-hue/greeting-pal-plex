@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { Heart, Play, Radio, Star } from "lucide-react";
 import { AppShell } from "@/components/tv/AppShell";
 import { ChannelLogo } from "@/components/tv/ChannelLogo";
@@ -30,6 +30,7 @@ export const Route = createFileRoute("/channel/$channelSlug")({
 
 function ChannelDetailsPage() {
   const { channel, related } = Route.useLoaderData();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { slugs, toggle } = useFavorites(user?.id ?? null);
   const favorite = slugs.includes(channel.slug);
@@ -66,7 +67,16 @@ function ChannelDetailsPage() {
         </div>
       </section>
       <div className="pb-16">
-        <ChannelRow title="More like this" subtitle="Related live channels" items={related} favorites={slugs} onFavorite={(item) => toggle(item.slug)} />
+        <ChannelRow
+          title="More like this"
+          subtitle="Related live channels"
+          items={related}
+          favorites={slugs}
+          onOpen={(item) =>
+            void navigate({ to: "/watch/$channelSlug", params: { channelSlug: item.slug } })
+          }
+          onFavorite={(item) => toggle(item.slug)}
+        />
       </div>
     </AppShell>
   );

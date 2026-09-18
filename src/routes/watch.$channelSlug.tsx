@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { PlayerModal } from "@/components/tv/PlayerModal";
 import { getChannelBySlug } from "@/lib/iptv.functions";
@@ -13,9 +14,22 @@ export const Route = createFileRoute("/watch/$channelSlug")({
   head: ({ loaderData }) => ({
     meta: [
       { title: loaderData ? `Watching ${loaderData.name} — Opencast` : "Stream unavailable — Opencast" },
-      { name: "description", content: loaderData ? `Watch ${loaderData.name} live in the Opencast player.` : "This stream is unavailable." },
-      { property: "og:title", content: loaderData ? `Watching ${loaderData.name} — Opencast` : "Stream unavailable — Opencast" },
-      { property: "og:description", content: loaderData ? `Watch ${loaderData.name} live in the Opencast player.` : "This stream is unavailable." },
+      {
+        name: "description",
+        content: loaderData
+          ? `Watch ${loaderData.name} live in the Opencast player.`
+          : "This stream is unavailable.",
+      },
+      {
+        property: "og:title",
+        content: loaderData ? `Watching ${loaderData.name} — Opencast` : "Stream unavailable — Opencast",
+      },
+      {
+        property: "og:description",
+        content: loaderData
+          ? `Watch ${loaderData.name} live in the Opencast player.`
+          : "This stream is unavailable.",
+      },
       { property: "og:type", content: "video.other" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -30,20 +44,18 @@ function WatchPage() {
   const { slugs, toggle } = useFavorites(user?.id ?? null);
   const { push } = useRecent();
 
-  useRecentOnMount(channel.slug, push);
+  useEffect(() => {
+    push(channel.slug);
+  }, [channel.slug, push]);
 
   return (
     <PlayerModal
-      page
       channel={channel}
-      onClose={() => void navigate({ to: "/channel/$channelSlug", params: { channelSlug: channel.slug } })}
+      onClose={() =>
+        void navigate({ to: "/channel/$channelSlug", params: { channelSlug: channel.slug } })
+      }
       onFavorite={(item) => toggle(item.slug)}
       isFavorite={slugs.includes(channel.slug)}
     />
   );
-}
-
-function useRecentOnMount(slug: string, push: (slug: string) => void) {
-  const React = require("react") as typeof import("react");
-  React.useEffect(() => push(slug), [slug, push]);
 }
