@@ -84,28 +84,44 @@ function BrowsePage() {
   return (
     <>
       <AppShell>
-        <div className="px-4 md:px-8">
-          <div className="mb-4 flex flex-wrap gap-2">
+        <div className="px-5 pb-14 md:px-8">
+          <header className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 pb-5 pt-2">
+            <div className="min-w-0">
+              <h1 className="font-display text-3xl text-foreground md:text-4xl">
+                {search.category
+                  ? search.category.replace(/^\w/, (m) => m.toUpperCase())
+                  : "Browse everything"}
+              </h1>
+              <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                {result.isLoading && page === 1 ? "Loading…" : `${total.toLocaleString()} channels`}
+              </p>
+            </div>
+          </header>
+
+          <div className="mb-6 flex flex-wrap items-center gap-2.5">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 apply({ q: term || undefined });
               }}
-              className="min-w-[180px] flex-1"
+              className="min-w-[200px] flex-1"
             >
-              <input
-                value={term}
-                onChange={(e) => setTerm(e.target.value)}
-                placeholder="Search by name…"
-                aria-label="Search channels"
-                className="w-full rounded-full bg-secondary px-4 py-2 text-xs text-foreground outline-none"
-              />
+              <label className="flex items-center gap-2 rounded-full bg-secondary/80 px-4 py-2.5 ring-1 ring-border/60 focus-within:ring-2 focus-within:ring-primary/60">
+                <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <input
+                  value={term}
+                  onChange={(e) => setTerm(e.target.value)}
+                  placeholder="Search by name…"
+                  aria-label="Search channels"
+                  className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
+                />
+              </label>
             </form>
             <select
               aria-label="Country"
               value={search.country ?? ""}
               onChange={(e) => apply({ country: e.target.value || undefined })}
-              className="rounded-full bg-secondary px-3 py-2 text-xs text-foreground"
+              className="rounded-full bg-secondary/80 px-4 py-2.5 text-xs text-foreground ring-1 ring-border/60 outline-none"
             >
               <option value="">All countries</option>
               {(filters.data?.countries ?? []).map((c) => (
@@ -118,7 +134,7 @@ function BrowsePage() {
               aria-label="Category"
               value={search.category ?? ""}
               onChange={(e) => apply({ category: e.target.value || undefined })}
-              className="rounded-full bg-secondary px-3 py-2 text-xs text-foreground"
+              className="rounded-full bg-secondary/80 px-4 py-2.5 text-xs text-foreground ring-1 ring-border/60 outline-none"
             >
               <option value="">All categories</option>
               {(filters.data?.categories ?? []).map((c) => (
@@ -128,10 +144,6 @@ function BrowsePage() {
               ))}
             </select>
           </div>
-
-          <p className="mb-3 text-[11px] text-muted-foreground">
-            {result.isLoading && page === 1 ? "Loading…" : `${total.toLocaleString()} channels`}
-          </p>
 
           {result.isLoading && page === 1 ? (
             <div className="poster-grid">
