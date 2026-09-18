@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "3535cc27-4a06-4590-a556-dd9ad4a97bad",
-  "project_id": "3d9af42f-2966-4570-8447-4214fa277db1",
-  "url": "/__l5e/assets-v1/3535cc27-4a06-4590-a556-dd9ad4a97bad/cat-entertainment.jpg",
-  "r2_key": "a/v1/3d9af42f-2966-4570-8447-4214fa277db1/3535cc27-4a06-4590-a556-dd9ad4a97bad/cat-entertainment.jpg",
-  "original_filename": "cat-entertainment.jpg",
-  "size": 116613,
   "content_type": "image/jpeg",
-  "created_at": "2026-07-28T16:44:35Z"
+  "created_at": "2026-07-28T16:44:35Z",
+  "original_filename": "cat-entertainment.jpg",
+  "project_id": "02f91104-d0fe-4f92-be1e-5af01ed92e6f",
+  "r2_key": "a/v1/02f91104-d0fe-4f92-be1e-5af01ed92e6f/3535cc27-4a06-4590-a556-dd9ad4a97bad/cat-entertainment.jpg",
+  "size": 116613,
+  "url": "/__l5e/assets-v1/3535cc27-4a06-4590-a556-dd9ad4a97bad/cat-entertainment.jpg",
+  "version": 1
 }

@@ -1,3 +1,0 @@
-CREATE POLICY "Anyone can read channel logos" ON storage.objects FOR SELECT USING (bucket_id = 'channel-logos');
-CREATE POLICY "Signed-in users can upload channel logos" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'channel-logos');
-CREATE POLICY "Signed-in users can update channel logos" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'channel-logos') WITH CHECK (bucket_id = 'channel-logos');
