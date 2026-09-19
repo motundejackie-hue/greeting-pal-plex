@@ -24,10 +24,10 @@ export function ChannelRow({ title, subtitle, items, onOpen, onFavorite, favorit
   if (items.length === 0) return null;
 
   return (
-    <section className="mb-12">
+    <section className="mb-9">
       <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 px-5 md:px-12">
         <div className="min-w-0">
-          <h2 className="truncate font-display text-xl text-foreground md:text-2xl">{title}</h2>
+          <h2 className="truncate font-display text-base font-semibold text-foreground md:text-lg">{title}</h2>
           {subtitle ? (
             <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
           ) : null}
@@ -58,13 +58,13 @@ export function ChannelRow({ title, subtitle, items, onOpen, onFavorite, favorit
       </div>
       <div
         ref={scroller}
-        className="no-scrollbar flex gap-4 overflow-x-auto scroll-smooth pb-2 md:gap-5"
+        className="no-scrollbar flex gap-3 overflow-x-auto scroll-smooth pb-2 md:gap-4"
       >
         <div aria-hidden="true" className="w-5 shrink-0 md:w-12" />
         {items.slice(0, 24).map((c) => (
           <div
             key={`${c.slug}-${c.streamUrl}`}
-            className="w-[136px] shrink-0 sm:w-[158px] md:w-[184px]"
+            className="w-[154px] shrink-0 sm:w-[178px] md:w-[200px]"
           >
             <ChannelCard
               channel={c}

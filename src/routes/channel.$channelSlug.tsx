@@ -43,11 +43,11 @@ function ChannelDetailsPage() {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,var(--background)_0%,color-mix(in_oklab,var(--background)_86%,transparent)_38%,color-mix(in_oklab,var(--background)_20%,transparent)_74%),linear-gradient(0deg,var(--background)_0%,transparent_62%)]" />
         <div className="relative flex min-h-[66vh] max-w-7xl items-end px-5 pb-14 pt-28 md:items-center md:px-12 md:pb-8">
           <div className="max-w-2xl">
-            <div className="mb-5 grid h-20 w-36 place-items-center overflow-hidden rounded-md bg-card/80 ring-1 ring-border/70 backdrop-blur">
+            <div className="mb-5 grid h-20 w-36 place-items-center overflow-hidden rounded-md bg-[var(--channel-surface)] ring-1 ring-border/70 shadow-[var(--shadow-tv)]">
               <ChannelLogo channel={channel} loading="eager" className="h-full w-full object-contain p-4" placeholderClassName="font-display text-2xl text-foreground" />
             </div>
             <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.28em] text-primary">Opencast selection</p>
-            <h1 className="max-w-xl font-display text-5xl leading-[0.95] text-foreground md:text-7xl">{channel.name}</h1>
+            <h1 className="max-w-xl font-display text-5xl font-semibold leading-[1.05] text-foreground md:text-7xl">{channel.name}</h1>
             <div className="mt-5 flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               <span className="inline-flex items-center gap-1 text-primary"><Star className="h-3 w-3 fill-current" /> Live</span>
               <span>{channel.categories[0] ?? "Television"}</span>

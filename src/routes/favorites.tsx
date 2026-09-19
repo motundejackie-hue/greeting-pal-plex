@@ -47,9 +47,9 @@ function FavoritesPage() {
 
   return (
     <AppShell>
-      <div className="px-4 pb-12 md:px-8">
+      <div className="px-4 pb-12 pt-5 md:px-8">
         <header className="mb-5">
-          <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">Favorites</h1>
+          <h1 className="font-display text-2xl font-semibold text-foreground md:text-3xl">Favorites</h1>
           <p className="mt-1 text-xs text-muted-foreground">
             {slugs.length} saved channel{slugs.length === 1 ? "" : "s"}
             {user ? " · synced to your account" : " · sign in to sync across devices"}
@@ -57,7 +57,7 @@ function FavoritesPage() {
         </header>
 
         {slugs.length === 0 ? (
-          <div className="grid place-items-center rounded-2xl bg-card px-6 py-16 text-center">
+          <div className="grid place-items-center rounded-md border border-border bg-card px-6 py-16 text-center">
             <Heart className="mb-3 h-7 w-7 text-primary" />
             <p className="text-sm font-semibold text-foreground">No favorites yet</p>
             <p className="mt-1 text-xs text-muted-foreground">Tap the heart on any channel to keep it here.</p>

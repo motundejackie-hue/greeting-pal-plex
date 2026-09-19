@@ -174,7 +174,7 @@ function Console() {
         }}
         className="mt-5 max-w-xl"
       >
-        <label className="flex items-center gap-3 rounded-2xl bg-secondary/70 px-4 py-3 ring-1 ring-border/60">
+        <label className="flex items-center gap-3 rounded-md bg-secondary/70 px-4 py-3 ring-1 ring-border/60">
           <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
           <input
             value={term}
@@ -200,7 +200,7 @@ function Console() {
           return (
             <li
               key={`${c.slug}-${c.streamUrl}`}
-              className="flex flex-wrap items-center gap-2 rounded-2xl bg-card px-4 py-3 ring-1 ring-border/60"
+              className="flex flex-wrap items-center gap-2 rounded-md bg-card px-4 py-3 ring-1 ring-border/60"
             >
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold text-foreground">
@@ -255,7 +255,7 @@ function Console() {
 
       {logoFor ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-background/85 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl bg-card p-5 ring-1 ring-border/60">
+          <div className="w-full max-w-md rounded-lg bg-card p-5 ring-1 ring-border/60">
             <p className="font-display text-lg font-bold text-foreground">
               Update artwork · {logoFor.name}
             </p>

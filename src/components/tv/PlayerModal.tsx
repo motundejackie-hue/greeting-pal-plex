@@ -220,9 +220,9 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
         ref={shell}
         onMouseMove={nudgeUi}
         onTouchStart={nudgeUi}
-        className="relative w-full overflow-hidden rounded-t-3xl bg-card shadow-ember ring-1 ring-border/60 sm:max-w-3xl sm:rounded-3xl"
+        className="relative w-full overflow-hidden rounded-t-lg bg-card shadow-[var(--shadow-tv)] ring-1 ring-border sm:max-w-4xl sm:rounded-lg"
       >
-        <div className="relative aspect-video w-full bg-black">
+        <div className="relative aspect-video w-full bg-background">
           <video
             ref={videoRef}
             playsInline
@@ -235,7 +235,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
 
           {/* Top bar: identity + close */}
           <div
-            className={`pointer-events-none absolute inset-x-0 top-0 z-40 flex items-start justify-between gap-3 bg-gradient-to-b from-black/80 to-transparent p-3 transition-opacity duration-200 ${
+            className={`pointer-events-none absolute inset-x-0 top-0 z-40 flex items-start justify-between gap-3 bg-gradient-to-b from-background/90 to-transparent p-3 transition-opacity duration-200 ${
               uiVisible ? "opacity-100" : "opacity-0"
             }`}
           >
@@ -245,7 +245,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
                 type="button"
                 aria-label="Back"
                 onClick={onClose}
-                className="tap grid h-9 w-9 shrink-0 place-items-center rounded-full bg-black/60 text-foreground backdrop-blur hover:bg-black/80"
+                className="tap grid h-9 w-9 shrink-0 place-items-center rounded-md bg-background/80 text-foreground backdrop-blur hover:bg-secondary"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
@@ -259,7 +259,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
               </div>
             </div>
             <div className="pointer-events-auto flex shrink-0 items-center gap-1.5">
-              <label className="hidden items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1.5 text-[11px] text-muted-foreground backdrop-blur sm:flex">
+              <label className="hidden items-center gap-1.5 rounded-md bg-background/80 px-2.5 py-1.5 text-[11px] text-muted-foreground backdrop-blur sm:flex">
                 <Radio className="h-3.5 w-3.5 text-primary" />
                 <select
                   aria-label="Stream server"
@@ -280,7 +280,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
                   type="button"
                   onClick={() => onFavorite(channel)}
                   aria-label={isFavorite ? "Saved" : "Save channel"}
-                  className="tap grid h-9 w-9 place-items-center rounded-full bg-black/60 text-foreground backdrop-blur hover:bg-black/80"
+                  className="tap grid h-9 w-9 place-items-center rounded-md bg-background/80 text-foreground backdrop-blur hover:bg-secondary"
                 >
                   <Heart className={`h-4 w-4 ${isFavorite ? "fill-current text-primary" : ""}`} />
                 </button>
@@ -289,7 +289,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
                 type="button"
                 aria-label="Close player"
                 onClick={onClose}
-                className="tap grid h-9 w-9 place-items-center rounded-full bg-black/60 text-foreground backdrop-blur hover:bg-destructive"
+                className="tap grid h-9 w-9 place-items-center rounded-md bg-background/80 text-foreground backdrop-blur hover:bg-destructive"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -309,7 +309,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
                   type="button"
                   aria-label="Back 10 seconds"
                   onClick={() => seek(-10)}
-                  className="tap grid h-12 w-12 place-items-center rounded-full bg-black/55 text-foreground backdrop-blur hover:bg-black/75"
+                  className="tap grid h-12 w-12 place-items-center rounded-md bg-background/75 text-foreground backdrop-blur hover:bg-secondary"
                 >
                   <RotateCcw className="h-5 w-5" />
                 </button>
@@ -329,7 +329,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
                   type="button"
                   aria-label="Forward 10 seconds"
                   onClick={() => seek(10)}
-                  className="tap grid h-12 w-12 place-items-center rounded-full bg-black/55 text-foreground backdrop-blur hover:bg-black/75"
+                  className="tap grid h-12 w-12 place-items-center rounded-md bg-background/75 text-foreground backdrop-blur hover:bg-secondary"
                 >
                   <RotateCw className="h-5 w-5" />
                 </button>
@@ -339,16 +339,16 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
 
           {/* Bottom overlay strip: volume, quality, next feed, fullscreen */}
           <div
-            className={`absolute inset-x-0 bottom-0 z-30 flex flex-wrap items-center gap-2 bg-gradient-to-t from-black/85 to-transparent px-3 pb-3 pt-8 transition-opacity duration-200 ${
+            className={`absolute inset-x-0 bottom-0 z-30 flex flex-wrap items-center gap-2 bg-gradient-to-t from-background/90 to-transparent px-3 pb-3 pt-8 transition-opacity duration-200 ${
               uiVisible && state === "playing" ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
           >
 
-            <span className="live-dot rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-foreground backdrop-blur">
+            <span className="live-dot rounded-md bg-background/80 px-2.5 py-1 text-[10px] font-bold uppercase text-foreground backdrop-blur">
               Live
             </span>
 
-            <div className="flex items-center gap-2 rounded-full bg-black/55 px-3 py-1.5 backdrop-blur">
+            <div className="flex items-center gap-2 rounded-md bg-background/80 px-3 py-1.5 backdrop-blur">
               <button
                 type="button"
                 aria-label={muted ? "Unmute" : "Mute"}
@@ -384,7 +384,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
                 aria-label="Quality"
                 value={level}
                 onChange={(e) => setLevel(Number(e.target.value))}
-                className="rounded-full bg-black/55 px-3 py-1.5 text-xs text-foreground backdrop-blur"
+                className="rounded-md bg-background/80 px-3 py-1.5 text-xs text-foreground backdrop-blur"
               >
                 <option value={-1}>Auto</option>
                 {levels.map((l) => (
@@ -399,7 +399,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
               type="button"
               aria-label="Next feed"
               onClick={skip}
-              className="tap ml-auto grid h-9 w-9 place-items-center rounded-full bg-black/55 text-foreground backdrop-blur hover:bg-black/80"
+              className="tap ml-auto grid h-9 w-9 place-items-center rounded-md bg-background/80 text-foreground backdrop-blur hover:bg-secondary"
             >
               <SkipForward className="h-4 w-4" />
             </button>
@@ -407,7 +407,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
               type="button"
               aria-label={full ? "Exit fullscreen" : "Fullscreen"}
               onClick={toggleFullscreen}
-              className="tap grid h-9 w-9 place-items-center rounded-full bg-black/55 text-foreground backdrop-blur hover:bg-black/80"
+              className="tap grid h-9 w-9 place-items-center rounded-md bg-background/80 text-foreground backdrop-blur hover:bg-secondary"
             >
               {full ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </button>
@@ -415,8 +415,8 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
 
           {state === "loading" ? (
             <div
-              className={`absolute inset-0 z-10 grid place-items-center overflow-hidden transition-colors duration-1000 ${
-                waited > 10 ? "bg-[#1a0a0c]" : waited > 5 ? "bg-[#0d0f14]" : "bg-black"
+              className={`absolute inset-0 z-10 grid place-items-center overflow-hidden bg-background transition-opacity duration-1000 ${
+                waited > 10 ? "opacity-100" : waited > 5 ? "opacity-95" : "opacity-90"
               }`}
             >
 
@@ -441,13 +441,13 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
                     className="broadcast-ring absolute inset-0 rounded-3xl border border-primary/60"
                     style={{ animationDelay: "1.2s" }}
                   />
-                  <span className="grid h-24 w-24 place-items-center overflow-hidden rounded-2xl bg-card ring-1 ring-border/70">
+                  <span className="grid h-24 w-24 place-items-center overflow-hidden rounded-md bg-[var(--channel-surface)] ring-1 ring-border/70">
                     <ChannelLogo
                       channel={channel}
                       alt=""
                       loading="eager"
                       className="h-full w-full object-contain p-3"
-                      placeholderClassName="grid h-full w-full place-items-center font-display text-xl font-bold text-foreground"
+                      placeholderClassName="grid h-full w-full place-items-center font-display text-xl font-bold text-[var(--channel-ink)]"
                       skeletonClassName="absolute inset-0 logo-skeleton"
                     />
                   </span>
@@ -478,23 +478,23 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
 
           {state === "playing" && !introDone && !intro ? (
             <div className="pointer-events-none absolute inset-x-0 bottom-16 z-10 grid place-items-center">
-              <span className="rounded-full bg-black/70 px-3 py-1.5 text-[11px] font-medium text-foreground backdrop-blur">
+              <span className="rounded-md bg-background/80 px-3 py-1.5 text-[11px] font-medium text-foreground backdrop-blur">
                 Preparing your stream…
               </span>
             </div>
           ) : null}
 
           {state === "playing" && intro ? (
-            <div className="pointer-events-none absolute inset-0 z-20 grid place-items-center bg-black/60 intro-fade">
+            <div className="pointer-events-none absolute inset-0 z-20 grid place-items-center bg-background/65 intro-fade">
 
               <div className="grid place-items-center gap-3">
-                <span className="grid h-28 w-28 place-items-center overflow-hidden rounded-2xl bg-black/40 intro-pop">
+                <span className="grid h-28 w-28 place-items-center overflow-hidden rounded-md bg-[var(--channel-surface)] intro-pop">
                   <ChannelLogo
                     channel={channel}
                     alt=""
                     loading="eager"
                     className="h-full w-full object-contain p-3"
-                    placeholderClassName="grid h-full w-full place-items-center font-display text-xl font-bold text-foreground"
+                    placeholderClassName="grid h-full w-full place-items-center font-display text-xl font-bold text-[var(--channel-ink)]"
                     skeletonClassName="hidden"
                   />
                 </span>
@@ -506,7 +506,7 @@ export function PlayerModal({ channel, onClose, onFavorite, isFavorite }: Props)
           ) : null}
 
           {state === "error" ? (
-            <div className="absolute inset-0 grid place-content-center justify-items-center gap-3 bg-black/90 px-6 text-center">
+            <div className="absolute inset-0 grid place-content-center justify-items-center gap-3 bg-background/95 px-6 text-center">
               <p className="text-xs text-muted-foreground">
                 Every known link for this channel timed out. Try again — links often come back.
               </p>

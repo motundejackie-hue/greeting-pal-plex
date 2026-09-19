@@ -28,7 +28,7 @@ export function HeroCarousel({ featured, onPlay, totalChannels }: Props) {
   const channel = slides[Math.min(index, slides.length - 1)];
 
   return (
-    <section className="relative mb-6 h-[56vh] min-h-[380px] w-full overflow-hidden md:h-[62vh] md:max-h-[560px]">
+    <section className="relative mb-6 h-[48vh] min-h-[340px] w-full overflow-hidden border-b border-border md:h-[52vh] md:max-h-[500px]">
       {slides.map((c, i) => (
         <img
           key={c.slug}
@@ -60,7 +60,7 @@ export function HeroCarousel({ featured, onPlay, totalChannels }: Props) {
           </p>
         </div>
 
-        <h1 className="font-display text-4xl leading-[0.95] text-foreground md:text-7xl">
+        <h1 className="font-display text-4xl font-semibold leading-[1.05] text-foreground md:text-6xl">
           {channel.name}
         </h1>
 

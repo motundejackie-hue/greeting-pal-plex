@@ -75,7 +75,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 grid h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border/40 bg-background/92 px-4 backdrop-blur-xl md:px-8">
+      <header className="sticky top-0 z-40 grid h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border/60 bg-background/95 px-4 backdrop-blur-xl md:px-8">
         {/* Left: menu + brand */}
         <div className="flex min-w-0 items-center gap-2">
           <button
@@ -87,11 +87,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Menu className="h-4 w-4" />
           </button>
           <Link to="/" className="flex min-w-0 items-center gap-2.5">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-brand shadow-ember">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-primary shadow-ember">
               <img src={appIcon} alt="" className="h-5 w-5" />
             </span>
-            <span className="hidden font-display text-2xl leading-none text-foreground sm:inline">
-              Opencast
+            <span className="hidden font-display text-base font-semibold leading-none text-foreground sm:inline">
+              Channel Store
             </span>
           </Link>
         </div>
@@ -106,7 +106,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               key={tab.label}
               to={tab.to}
               search={tab.search as never}
-              className={`tap relative flex h-16 shrink-0 items-center text-[11px] font-semibold uppercase tracking-[0.18em] transition ${
+              className={`tap relative flex h-16 shrink-0 items-center text-[11px] font-medium uppercase tracking-[0.12em] transition ${
                 tabActive(tab)
                   ? "text-foreground after:absolute after:inset-x-0 after:bottom-[18px] after:h-[2px] after:bg-primary"
                   : "text-muted-foreground hover:text-foreground"
@@ -195,11 +195,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             className="absolute inset-0 bg-background/80 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 flex w-64 flex-col gap-1 overflow-y-auto bg-card p-3">
+          <div className="absolute inset-y-0 left-0 flex w-64 flex-col gap-1 overflow-y-auto border-r border-border bg-background p-3 shadow-[var(--shadow-tv)]">
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img src={appIcon} alt="" className="h-8 w-8 rounded-xl" />
-                <span className="font-display text-lg font-bold text-foreground">Opencast</span>
+                <span className="font-display text-base font-semibold text-foreground">Channel Store</span>
               </div>
               <button
                 type="button"
@@ -221,7 +221,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   to={item.to}
                   search={item.search as never}
                   onClick={() => setOpen(false)}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors ${
+                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
                     active
                       ? "bg-brand text-primary-foreground shadow-ember"
                       : "text-foreground hover:bg-secondary"
