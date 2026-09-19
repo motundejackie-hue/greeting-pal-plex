@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { getHome, searchChannels } from "@/lib/iptv.functions";
 import type { Channel } from "@/lib/channel-types";
 import { AppShell } from "@/components/tv/AppShell";
@@ -84,10 +84,10 @@ function BrowsePage() {
   return (
     <>
       <AppShell>
-        <div className="px-5 pb-14 md:px-8">
+        <div className="px-5 pb-14 pt-4 md:px-8">
           <header className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 pb-5 pt-2">
             <div className="min-w-0">
-              <h1 className="font-display text-3xl text-foreground md:text-4xl">
+              <h1 className="font-display text-2xl font-semibold text-foreground md:text-3xl">
                 {search.category
                   ? search.category.replace(/^\w/, (m) => m.toUpperCase())
                   : "Browse everything"}
