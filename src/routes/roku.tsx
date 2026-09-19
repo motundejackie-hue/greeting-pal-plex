@@ -89,7 +89,7 @@ function RokuPage() {
           }}
           className="mt-5 max-w-xl"
         >
-          <label className="flex items-center gap-3 rounded-2xl bg-secondary/70 px-4 py-3 ring-1 ring-border/60 focus-within:ring-2 focus-within:ring-primary/60">
+          <label className="flex items-center gap-3 rounded-md bg-secondary/70 px-4 py-3 ring-1 ring-border/60 focus-within:ring-2 focus-within:ring-primary/60">
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
             <input
               value={term}
@@ -113,7 +113,7 @@ function RokuPage() {
               <button
                 type="button"
                 onClick={() => setActive(c)}
-                className="tap flex w-full items-center gap-3 rounded-2xl bg-card px-4 py-3 text-left ring-1 ring-border/60 transition hover:ring-primary/60"
+                className="tap flex w-full items-center gap-3 rounded-md bg-card px-4 py-3 text-left ring-1 ring-border/60 transition hover:ring-primary/60"
               >
                 <span className="text-lg" aria-hidden="true">
                   {countryFlag(c.country)}
@@ -139,7 +139,7 @@ function RokuPage() {
 
       {active ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-background/85 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-3xl bg-card p-5 shadow-ember ring-1 ring-border/60">
+          <div className="w-full max-w-lg rounded-lg bg-card p-5 shadow-[var(--shadow-tv)] ring-1 ring-border/60">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="truncate font-display text-lg font-bold text-foreground">

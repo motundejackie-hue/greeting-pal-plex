@@ -118,7 +118,7 @@ function LogoManagerPage() {
     <AppShell>
       <div className="mx-auto w-full max-w-3xl px-4 pb-16 md:px-8">
         <header className="mb-5">
-          <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">
+          <h1 className="font-display text-2xl font-semibold text-foreground md:text-3xl">
             Logo manager
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -151,11 +151,11 @@ function LogoManagerPage() {
                 setPreview(c.logo);
                 setNote(null);
               }}
-              className={`flex items-center gap-3 rounded-xl bg-card p-2.5 text-left ring-1 transition ${
+              className={`flex items-center gap-3 rounded-md bg-card p-2.5 text-left ring-1 transition ${
                 target?.slug === c.slug ? "ring-2 ring-primary" : "ring-border/60 hover:ring-primary/60"
               }`}
             >
-              <span className="grid h-10 w-14 shrink-0 place-items-center overflow-hidden rounded-md bg-secondary">
+              <span className="grid h-10 w-14 shrink-0 place-items-center overflow-hidden rounded-md bg-[var(--channel-surface)]">
                 {c.logo ? (
                   <img src={c.logo} alt="" className="h-full w-full object-contain p-1" />
                 ) : (
@@ -186,7 +186,7 @@ function LogoManagerPage() {
               if (url) void saveLogo(url);
               else setNote("That drop didn't contain an image.");
             }}
-            className={`rounded-2xl border-2 border-dashed p-8 text-center transition ${
+            className={`rounded-md border-2 border-dashed p-8 text-center transition ${
               over ? "border-primary bg-brand-soft" : "border-border bg-card"
             }`}
           >

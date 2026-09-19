@@ -83,7 +83,7 @@ function TutorialsPage() {
     <AppShell>
       <div className="px-4 pb-12 md:px-8">
         <header className="mb-6">
-          <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">
+          <h1 className="font-display text-2xl font-semibold text-foreground md:text-3xl">
             Tutorials &amp; shortcuts
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -92,7 +92,7 @@ function TutorialsPage() {
         </header>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <section className="rounded-2xl bg-card p-4">
+          <section className="rounded-md border border-border bg-card p-4">
             <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
               <Keyboard className="h-4 w-4 text-primary" /> Desktop &amp; TV shortcuts
             </h2>
@@ -108,7 +108,7 @@ function TutorialsPage() {
             </ul>
           </section>
 
-          <section className="rounded-2xl bg-card p-4">
+          <section className="rounded-md border border-border bg-card p-4">
             <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
               <Smartphone className="h-4 w-4 text-primary" /> Phone gestures
             </h2>
@@ -127,7 +127,7 @@ function TutorialsPage() {
           {GUIDES.map((g) => {
             const Icon = g.icon;
             return (
-              <section key={g.title} className="rounded-2xl bg-card p-4">
+              <section key={g.title} className="rounded-md border border-border bg-card p-4">
                 <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
                   <Icon className="h-4 w-4 text-primary" /> {g.title}
                 </h2>

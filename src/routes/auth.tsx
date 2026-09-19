@@ -55,7 +55,7 @@ function AuthPage() {
   return (
     <AppShell>
       <div className="mx-auto w-full max-w-sm px-4 py-10">
-        <h1 className="font-display text-2xl font-bold text-foreground">
+        <h1 className="font-display text-2xl font-semibold text-foreground">
           {user ? "Your account" : "Sign in to Opencast"}
         </h1>
         <p className="mt-1 text-xs text-muted-foreground">
@@ -66,7 +66,7 @@ function AuthPage() {
           <button
             type="button"
             onClick={() => void supabase.auth.signOut()}
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-semibold text-foreground"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-secondary px-4 py-2.5 text-sm font-semibold text-foreground"
           >
             <LogOut className="h-4 w-4" /> Sign out
           </button>
@@ -76,7 +76,7 @@ function AuthPage() {
               type="button"
               disabled={busy}
               onClick={() => void google()}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-ember disabled:opacity-60"
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-ember disabled:opacity-60"
             >
               <LogIn className="h-4 w-4" /> Continue with Google
             </button>
@@ -93,7 +93,7 @@ function AuthPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 aria-label="Email"
-                className="w-full rounded-xl bg-secondary px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                className="w-full rounded-md bg-secondary px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
               />
               <input
                 type="password"
@@ -103,12 +103,12 @@ function AuthPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 aria-label="Password"
-                className="w-full rounded-xl bg-secondary px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                className="w-full rounded-md bg-secondary px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
               />
               <button
                 type="submit"
                 disabled={busy}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-semibold text-foreground disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-secondary px-4 py-2.5 text-sm font-semibold text-foreground disabled:opacity-60"
               >
                 <Mail className="h-4 w-4" /> {mode === "signin" ? "Sign in" : "Create account"}
               </button>

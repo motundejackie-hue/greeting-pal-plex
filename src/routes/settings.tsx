@@ -29,7 +29,7 @@ export const Route = createFileRoute("/settings")({
 
 function Row({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-2xl bg-card p-4">
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-md border border-border bg-card p-4">
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-foreground">{title}</p>
         <p className="text-xs text-muted-foreground">{description}</p>
@@ -66,14 +66,14 @@ function SettingsPage() {
     <AppShell>
       <div className="mx-auto w-full max-w-2xl px-4 pb-12 md:px-8">
         <header className="mb-5">
-          <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">Settings</h1>
+          <h1 className="font-display text-2xl font-semibold text-foreground md:text-3xl">Settings</h1>
           <p className="mt-1 text-xs text-muted-foreground">Tune Opencast to how you watch.</p>
         </header>
 
         {note ? <p className="mb-4 rounded-xl bg-brand-soft px-3 py-2 text-xs">{note}</p> : null}
 
         <div className="space-y-3">
-          <Row title="Theme" description="Opencast is designed for a dark room. Red on black, always.">
+          <Row title="Theme" description="Opencast uses a deep navy interface with crisp white channel tiles.">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs text-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" /> Dark
             </span>
